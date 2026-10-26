@@ -1251,6 +1251,296 @@ footer {
     Explore the simulation →
   </a>
 </section>
+  
+<style>
+.fsl-gateway {
+  --fsl-ink: #152b49;
+  --fsl-blue: #2858c7;
+  --fsl-teal: #149b91;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 36px 22px 24px;
+  color: var(--fsl-ink);
+  font-family: inherit;
+}
+.fsl-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 390px;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  align-items: center;
+  gap: 24px;
+  padding: clamp(24px,5vw,58px);
+  border: 1px solid #dce7f4;
+  border-radius: 26px;
+  background:
+    radial-gradient(ellipse at 85% 18%,rgba(102,165,255,.18),transparent 48%),
+    radial-gradient(ellipse at 90% 90%,rgba(20,155,145,.12),transparent 42%),
+    linear-gradient(135deg,#fff 0%,#f3f7ff 100%);
+}
+.fsl-eyebrow {
+  color: var(--fsl-blue);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+.fsl-hero h1 {
+  margin: 16px 0;
+  font-size: clamp(36px,5.1vw,61px);
+  line-height: 1.06;
+  letter-spacing: -2px;
+  max-width: 590px;
+}
+.fsl-hero-copy {
+  color: #596b83;
+  max-width: 490px;
+  font-size: 16px;
+  line-height: 1.8;
+}
+.fsl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+  margin-top: 25px;
+}
+.fsl-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 17px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 750;
+  text-decoration: none !important;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.fsl-button:hover { transform: translateY(-2px); }
+.fsl-primary {
+  color: white !important;
+  background: var(--fsl-blue);
+  box-shadow: 0 7px 20px #2858c728;
+}
+.fsl-secondary {
+  color: var(--fsl-ink) !important;
+  border: 1px solid #d5e0ee;
+  background: rgba(255,255,255,.8);
+}
+.fsl-visual {
+  position: relative;
+  min-width: 0;
+  width: 100%;
+}
+.fsl-visual svg { display:block;width:100%;height:auto;overflow:visible; }
+.fsl-path {
+  fill:none;
+  stroke:#91b5ec;
+  stroke-width:2;
+  stroke-dasharray:7 9;
+  animation:fsl-flow 2.6s linear infinite;
+}
+.fsl-path-teal {
+  fill:none;
+  stroke:#75c9bd;
+  stroke-width:2;
+  stroke-dasharray:5 10;
+  animation:fsl-flow 2s linear infinite;
+}
+.fsl-particle {
+  filter: drop-shadow(0 0 5px #5295ff);
+}
+.fsl-node {
+  fill:#fff;
+  stroke:#d3e1f3;
+  stroke-width:1.5;
+}
+.fsl-node-blue { fill:#eaf1ff;stroke:#a8c3f3; }
+.fsl-node-teal { fill:#e5f7f2;stroke:#8cd2c5; }
+.fsl-visual-label {
+  font:600 11px Arial,sans-serif;
+  fill:#304967;
+}
+.fsl-visual-small {
+  font:10px Arial,sans-serif;
+  fill:#70819a;
+}
+@keyframes fsl-flow {
+  to { stroke-dashoffset:-64; }
+}
+.fsl-section-heading {
+  margin:30px 0 15px;
+}
+.fsl-section-heading h2 {
+  font-size:24px;
+  letter-spacing:-.5px;
+  margin:0 0 5px;
+}
+.fsl-section-heading p {
+  margin:0;
+  color:#637188;
+  font-size:14px;
+}
+.fsl-cards {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.fsl-card {
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  min-width:0;
+  padding:24px;
+  border:1px solid #e0e7f0;
+  border-radius:17px;
+  background:#fff;
+  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+.fsl-card:hover {
+  transform:translateY(-3px);
+  border-color:#b7caed;
+  box-shadow:0 12px 30px #1b37640d;
+}
+.fsl-card-icon {
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border-radius:13px;
+  background:#edf3ff;
+  color:#2858c7;
+  font-size:22px;
+  margin-bottom:17px;
+}
+.fsl-card h3 { margin:0 0 8px;font-size:19px; }
+.fsl-card p {
+  color:#637188;
+  font-size:14px;
+  line-height:1.75;
+  margin:0 0 18px;
+}
+.fsl-card a {
+  margin-top:auto;
+  color:#2858c7;
+  font-weight:750;
+  font-size:13px;
+  text-decoration:none;
+}
+.fsl-footnote {
+  margin-top:18px;
+  color:#758197;
+  font-size:12px;
+  line-height:1.7;
+}
+@media(max-width:720px) {
+  .fsl-gateway { padding:22px 14px; }
+  .fsl-hero { grid-template-columns:1fr;gap:12px;padding:28px 21px; }
+  .fsl-hero h1 { letter-spacing:-1.3px; }
+  .fsl-visual { max-width:430px;margin:0 auto; }
+  .fsl-cards { grid-template-columns:1fr; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .fsl-path,.fsl-path-teal { animation:none; }
+  .fsl-card,.fsl-button { transition:none; }
+  .fsl-card:hover,.fsl-button:hover { transform:none; }
+}
+</style>
+
+<section class="fsl-gateway" aria-label="FinTech Systems Lab introduction">
+  <div class="fsl-hero">
+    <div>
+      <div class="fsl-eyebrow">EXPLORE THE SYSTEMS BEHIND MONEY</div>
+      <h1>Money moves.<br>Systems make it happen.</h1>
+      <p class="fsl-hero-copy">
+        What happens after you press Pay? Discover the networks,
+        institutions, checks and processes that make financial
+        transactions possible. Explore each step through interactive
+        simulations, without needing a finance background.
+      </p>
+      <div class="fsl-actions">
+        <a class="fsl-button fsl-primary" href="#fsl-explore">Explore the Lab ↓</a>
+        <a class="fsl-button fsl-secondary" href="cross-border.html">Cross-Border Payments ↗</a>
+      </div>
+    </div>
+
+    <div class="fsl-visual" aria-label="Illustration of a transaction travelling between connected financial systems">
+      <svg viewBox="0 0 420 340" role="img" aria-labelledby="fsl-svg-title">
+        <title id="fsl-svg-title">A payment travels between a sender, financial network and recipient</title>
+        <defs>
+          <linearGradient id="fsl-line" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#6799f0"/>
+            <stop offset="100%" stop-color="#42b7a5"/>
+          </linearGradient>
+          <filter id="fsl-glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle cx="210" cy="166" r="126" fill="#eaf2ff" opacity=".48"/>
+        <circle cx="210" cy="166" r="91" fill="none" stroke="#dbe7f7" stroke-dasharray="3 7"/>
+        <path class="fsl-path" d="M80 90 C135 90 140 145 185 145 S275 70 340 90"/>
+        <path class="fsl-path-teal" d="M80 250 C140 250 145 188 205 188 S280 245 340 245"/>
+        <path d="M80 90 C135 90 140 145 185 145 S275 70 340 90" fill="none" stroke="url(#fsl-line)" stroke-width="2.5" opacity=".5"/>
+        <circle class="fsl-particle" r="5" fill="#3977e8" filter="url(#fsl-glow)">
+          <animateMotion dur="3.4s" repeatCount="indefinite" path="M80 90 C135 90 140 145 185 145 S275 70 340 90"/>
+        </circle>
+        <circle class="fsl-particle" r="4" fill="#18a18f">
+          <animateMotion dur="4s" repeatCount="indefinite" path="M340 245 C280 245 265 188 205 188 S140 250 80 250"/>
+        </circle>
+        <rect class="fsl-node" x="12" y="58" width="106" height="64" rx="12"/>
+        <circle cx="31" cy="80" r="5" fill="#3977e8"/>
+        <text class="fsl-visual-label" x="24" y="99">Sender</text>
+        <text class="fsl-visual-small" x="24" y="112">Starts payment</text>
+        <rect class="fsl-node fsl-node-blue" x="154" y="123" width="112" height="66" rx="13"/>
+        <text class="fsl-visual-label" x="210" y="148" text-anchor="middle">Payment</text>
+        <text class="fsl-visual-label" x="210" y="162" text-anchor="middle">network</text>
+        <text class="fsl-visual-small" x="210" y="177" text-anchor="middle">Checks · Routing</text>
+        <rect class="fsl-node fsl-node-teal" x="302" y="58" width="106" height="64" rx="12"/>
+        <circle cx="321" cy="80" r="5" fill="#18a18f"/>
+        <text class="fsl-visual-label" x="314" y="99">Recipient</text>
+        <text class="fsl-visual-small" x="314" y="112">Receives funds</text>
+        <rect x="12" y="220" width="106" height="58" rx="12" fill="#fff" stroke="#dce7f4"/>
+        <text class="fsl-visual-label" x="24" y="242">Validation</text>
+        <text class="fsl-visual-small" x="24" y="257">Is it permitted?</text>
+        <rect x="302" y="215" width="106" height="68" rx="12" fill="#fff" stroke="#dce7f4"/>
+        <text class="fsl-visual-label" x="314" y="238">Confirmation</text>
+        <text class="fsl-visual-small" x="314" y="253">Check status</text>
+        <text class="fsl-visual-small" x="210" y="319" text-anchor="middle">A simplified learning illustration</text>
+      </svg>
+    </div>
+  </div>
+
+  <div id="fsl-explore" class="fsl-section-heading">
+    <h2>Choose a journey</h2>
+    <p>Start with a familiar payment, then explore how money moves across borders.</p>
+  </div>
+
+  <div class="fsl-cards">
+    <article class="fsl-card">
+      <div class="fsl-card-icon" aria-hidden="true">↗</div>
+      <h3>Domestic Payments</h3>
+      <p>Explore your existing payment simulator and discover how payment instructions, bank checks, processing and transaction outcomes fit together.</p>
+      <a href="#fsl-domestic" onclick="event.preventDefault(); const target=document.querySelector('form')||document.querySelector('input,select,button'); if(target) target.scrollIntoView({behavior:'smooth',block:'center'}); else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});">Explore the existing simulator →</a>
+    </article>
+
+    <article class="fsl-card">
+      <div class="fsl-card-icon" aria-hidden="true">⇄</div>
+      <h3>Cross-Border Payments</h3>
+      <p>Follow an international payment through currency conversion, fees, compliance checks, routing and recipient credit.</p>
+      <a href="cross-border.html">Explore the cross-border journey →</a>
+    </article>
+  </div>
+
+  <p class="fsl-footnote">
+    FinTech Systems Lab is an independent financial education project by
+    G Hari Charan, Design &amp; Curator. Simulations are illustrative and
+    do not initiate real transactions.
+  </p>
+</section>
+
 
 </body>
+  
 </html>
