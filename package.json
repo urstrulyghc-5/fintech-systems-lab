@@ -1,0 +1,10 @@
+{
+  "name": "fintech-systems-lab",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "description": "Interactive FinTech learning platform with payment simulations, architecture map, terminology and references."
+}
