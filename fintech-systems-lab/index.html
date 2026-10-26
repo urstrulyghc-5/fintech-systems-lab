@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="An educational fintech payment-processing simulation with transaction lifecycle, failure handling and reconciliation.">
+  <title>FinTech Systems Lab | Payment Processing</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="FinTech Systems Lab home"><span class="brand-mark">F</span><span>FinTech <strong>Systems Lab</strong></span></a>
+    <div class="top-meta"><span class="live-dot"></span> LOCAL SIMULATION <span class="version">v1.0</span></div>
+  </header>
+
+  <main id="top" class="shell">
+    <section class="hero">
+      <div class="eyebrow">PAYMENT INFRASTRUCTURE · INTERACTIVE MODEL</div>
+      <h1>See what happens <span>behind a payment.</span></h1>
+      <p class="hero-copy">Follow a transaction from initiation to a final state. Inspect validation, authorisation decisions, ledger entries and reconciliation, including what happens when a transaction fails.</p>
+      <div class="notice"><strong>Simulation, not a live payment service.</strong> All transactions and counterparties are fictional. No money moves and no bank, card network or payment provider is connected.</div>
+    </section>
+
+    <section class="metric-grid" aria-label="System summary">
+      <article class="metric"><span class="metric-label">Transactions</span><strong id="metric-total">0</strong><span class="metric-foot">In this session</span></article>
+      <article class="metric"><span class="metric-label">Successful</span><strong id="metric-success">0</strong><span class="metric-foot">Simulated approvals</span></article>
+      <article class="metric"><span class="metric-label">Needs attention</span><strong id="metric-attention">0</strong><span class="metric-foot">Failed or pending</span></article>
+      <article class="metric"><span class="metric-label">Reconciliation</span><strong id="metric-recon">Not run</strong><span class="metric-foot">Internal record check</span></article>
+    </section>
+
+    <section class="layout-grid">
+      <section class="panel create-panel" aria-labelledby="create-title">
+        <div class="panel-heading"><div><div class="section-kicker">01 / INITIATE</div><h2 id="create-title">Create a payment</h2></div><span class="step-number">01</span></div>
+        <p class="panel-intro">Submit a fictional merchant payment. Choose a scenario to inspect how the system handles different outcomes.</p>
+        <form id="payment-form">
+          <label for="merchant">Merchant reference</label>
+          <input id="merchant" name="merchant" maxlength="60" value="Northstar Books" required autocomplete="off">
+          <div class="form-row">
+            <div><label for="amount">Amount (INR)</label><input id="amount" name="amount" type="number" min="1" max="1000000" step="0.01" value="1250.00" required></div>
+            <div><label for="method">Payment rail (simulated)</label><select id="method" name="method"><option value="UPI">UPI</option><option value="CARD">Card</option><option value="BANK_TRANSFER">Bank transfer</option><option value="WALLET">Wallet</option></select></div>
+          </div>
+          <label for="scenario">Test scenario</label>
+          <select id="scenario" name="scenario"><option value="success">Successful payment</option><option value="declined">Authorisation declined</option><option value="timeout">Processor timeout</option><option value="invalid">Validation failure</option></select>
+          <button class="primary-button" type="submit">Run payment simulation <span aria-hidden="true">→</span></button>
+          <p id="form-message" class="form-message" role="status" aria-live="polite">Ready to process a simulated transaction.</p>
+        </form>
+        <div class="mini-explainer"><strong>What this tests</strong><p>Input validation → transaction creation → simulated decision → state update → ledger recording.</p></div>
+      </section>
+
+      <section class="panel lifecycle-panel" aria-labelledby="lifecycle-title">
+        <div class="panel-heading"><div><div class="section-kicker">02 / TRACE</div><h2 id="lifecycle-title">Payment lifecycle</h2></div><span class="step-number">02</span></div>
+        <p class="panel-intro">Select a transaction in the table to inspect its event trail.</p>
+        <div class="lifecycle" id="lifecycle" aria-label="Transaction lifecycle">
+          <div class="life-step current" data-stage="initiated"><span class="life-icon">1</span><div><strong>Initiated</strong><small>Request received</small></div></div>
+          <div class="life-line"></div>
+          <div class="life-step" data-stage="validated"><span class="life-icon">2</span><div><strong>Validated</strong><small>Fields and amount checked</small></div></div>
+          <div class="life-line"></div>
+          <div class="life-step" data-stage="authorised"><span class="life-icon">3</span><div><strong>Decision</strong><small>Simulated authorisation</small></div></div>
+          <div class="life-line"></div>
+          <div class="life-step" data-stage="recorded"><span class="life-icon">4</span><div><strong>Recorded</strong><small>Internal ledger entry</small></div></div>
+        </div>
+        <div class="trace-box"><div class="trace-header"><strong id="trace-title">Event trail</strong><span id="trace-status" class="status-chip neutral">No transaction selected</span></div><ol id="event-list" class="event-list"><li class="empty-state">Run a simulation to see its event trail here.</li></ol></div>
+      </section>
+    </section>
+
+    <section class="panel transactions-panel" aria-labelledby="transactions-title">
+      <div class="panel-heading table-heading"><div><div class="section-kicker">03 / OBSERVE</div><h2 id="transactions-title">Transaction register</h2></div><div class="table-actions"><select id="filter-status" aria-label="Filter by transaction status"><option value="ALL">All statuses</option><option value="SUCCESS">Successful</option><option value="DECLINED">Declined</option><option value="PENDING_REVIEW">Pending review</option><option value="VALIDATION_FAILED">Validation failed</option></select><button id="seed-button" class="secondary-button" type="button">Load example cases</button></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Transaction ID</th><th>Merchant</th><th>Amount</th><th>Rail</th><th>Status</th><th>Time</th><th>Action</th></tr></thead><tbody id="transaction-rows"><tr><td colspan="7" class="empty-table">No transactions yet. Run a payment simulation or load example cases.</td></tr></tbody></table></div>
+      <p class="table-note">IDs are generated locally. Selecting a row loads its lifecycle and event trail.</p>
+    </section>
+
+    <section class="bottom-grid">
+      <section class="panel reconciliation-panel" aria-labelledby="recon-title">
+        <div class="panel-heading"><div><div class="section-kicker">04 / VERIFY</div><h2 id="recon-title">Reconciliation check</h2></div><span class="step-number">04</span></div>
+        <p class="panel-intro">Compare successful internal ledger entries with the simulated settlement report. This checks the sample records, not a real bank statement.</p>
+        <button id="reconcile-button" class="primary-button" type="button">Run reconciliation <span aria-hidden="true">→</span></button>
+        <div id="recon-results" class="recon-results" aria-live="polite"><div class="empty-state">Run a reconciliation after creating transactions.</div></div>
+      </section>
+      <section class="panel integrity-panel" aria-labelledby="integrity-title">
+        <div class="panel-heading"><div><div class="section-kicker">05 / UNDERSTAND</div><h2 id="integrity-title">System integrity</h2></div><span class="step-number">05</span></div>
+        <ul class="integrity-list">
+          <li><span class="check">✓</span><div><strong>Duplicate request guard</strong><p>Repeated request keys are rejected instead of creating a second transaction.</p></div></li>
+          <li><span class="check">✓</span><div><strong>Explicit transaction states</strong><p>Success, decline, validation failure and uncertain processor outcomes are kept distinct.</p></div></li>
+          <li><span class="check">✓</span><div><strong>Auditable event trail</strong><p>Each simulated step records an event and timestamp.</p></div></li>
+          <li><span class="check">✓</span><div><strong>Reconciliation</strong><p>Internal records are compared with a separate simulated settlement dataset.</p></div></li>
+        </ul>
+      </section>
+    </section>
+
+    <section class="method-note"><strong>Scope and limitations</strong><p>This educational model demonstrates application-level payment logic. Real payment systems also depend on regulated participants, network protocols, authentication, fraud controls, settlement arrangements, security operations and provider-specific rules. The simulation does not claim to reproduce any particular provider's production implementation.</p></section>
+    <footer><span>FINTECH SYSTEMS LAB</span><span>Educational prototype · Fictional data · No live financial connections</span></footer>
+  </main>
+</body>
+</html>
