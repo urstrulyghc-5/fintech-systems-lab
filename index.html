@@ -1,1546 +1,810 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FinTech Systems Lab | Payment Processing</title>
-<meta name="description" content="An interactive educational simulation showing how fintech payment processing, transaction controls, failures and reconciliation work.">
+<meta name="theme-color" content="#f7f8fc">
+<title>FinTech Systems Lab | Payment Systems Explorer</title>
+<meta name="description" content="Explore payment rails, transaction lifecycles, risk controls, settlement, reconciliation and cross-border payment systems through interactive simulations.">
 
 <style>
 :root {
-  --navy: #173653;
-  --blue: #2469a6;
-  --blue-light: #eaf3fb;
-  --ink: #243447;
-  --muted: #69798b;
-  --line: #dce4ec;
-  --background: #f4f7fa;
-  --white: #ffffff;
-  --green: #18764b;
-  --green-bg: #e8f5ed;
-  --amber: #956300;
-  --amber-bg: #fff4d6;
-  --red: #b52d31;
-  --red-bg: #fdeced;
-}
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--background);
-  color: var(--ink);
-  font: 14px/1.55 -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Arial, sans-serif;
-}
-
-button, input, select { font: inherit; }
-button { cursor: pointer; }
-
-.topbar {
-  background: var(--white);
-  border-bottom: 1px solid var(--line);
-}
-
-.topbar-inner {
-  max-width: 1440px;
-  margin: auto;
-  padding: 16px 28px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-mark {
-  width: 39px;
-  height: 39px;
-  display: grid;
-  place-items: center;
-  background: var(--navy);
-  color: white;
-  border-radius: 5px;
-  font-weight: 800;
-}
-
-.brand h1 {
-  font-size: 16px;
-  margin: 0;
-  color: var(--navy);
-}
-
-.brand p {
-  margin: 2px 0 0;
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.environment {
-  font-size: 11px;
-  color: var(--amber);
-  background: var(--amber-bg);
-  border: 1px solid #ead7a2;
-  border-radius: 4px;
-  padding: 6px 9px;
-  font-weight: 700;
-}
-
-.container {
-  max-width: 1440px;
-  padding: 28px;
-  margin: auto;
-}
-
-.intro {
-  display: flex;
-  justify-content: space-between;
-  gap: 22px;
-  align-items: flex-start;
-  margin-bottom: 24px;
-}
-
-.eyebrow {
-  color: var(--blue);
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-}
-
-h2 {
-  color: var(--navy);
-  font-size: clamp(25px, 3vw, 34px);
-  line-height: 1.2;
-  letter-spacing: -.7px;
-  margin: 7px 0 10px;
-}
-
-.intro p {
-  max-width: 790px;
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-.notice {
-  margin: 0 0 23px;
-  background: var(--blue-light);
-  border: 1px solid #cbdfee;
-  border-left: 4px solid var(--blue);
-  border-radius: 4px;
-  padding: 13px 15px;
-  color: #35526d;
-  font-size: 12px;
-}
-
-.notice strong { color: var(--navy); }
-
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 22px;
-}
-
-.metric, .panel {
-  background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-}
-
-.metric { padding: 17px; }
-
-.metric-label {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-.metric-value {
-  font-size: 26px;
-  font-weight: 750;
-  color: var(--navy);
-  margin: 7px 0 5px;
-  overflow-wrap: anywhere;
-}
-
-.metric-note {
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.main-grid {
-  display: grid;
-  grid-template-columns: minmax(290px, 365px) minmax(0, 1fr);
-  gap: 19px;
-  align-items: start;
-}
-
-.panel { overflow: hidden; }
-
-.panel-heading {
-  padding: 17px 19px;
-  border-bottom: 1px solid var(--line);
-}
-
-.panel-heading h3 {
-  margin: 0;
-  font-size: 15px;
-  color: var(--navy);
-}
-
-.panel-heading p {
-  color: var(--muted);
-  font-size: 12px;
-  margin: 5px 0 0;
-}
-
-.panel-content { padding: 19px; }
-
-.field { margin-bottom: 15px; }
-
-.field label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.field input, .field select {
-  display: block;
-  width: 100%;
-  min-height: 41px;
-  padding: 9px 10px;
-  background: white;
-  border: 1px solid #cbd5df;
-  border-radius: 4px;
-  color: var(--ink);
-}
-
-.field input:focus, .field select:focus {
-  outline: 2px solid #c3def5;
-  border-color: var(--blue);
-}
-
-.help {
-  display: block;
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.button {
-  border: 1px solid #cbd5df;
-  border-radius: 4px;
-  background: white;
-  color: var(--ink);
-  font-weight: 650;
-  padding: 9px 12px;
-}
-
-.button-primary {
-  width: 100%;
-  background: var(--blue);
-  color: white;
-  border-color: var(--blue);
-  padding: 12px;
-}
-
-.button-primary:hover { background: #1b5689; }
-
-.button:disabled {
-  opacity: .6;
-  cursor: wait;
-}
-
-.result {
-  display: none;
-  margin-top: 14px;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 12px;
-  font-size: 12px;
-}
-
-.result.visible { display: block; }
-.result strong { display: block; margin-bottom: 4px; }
-.result.success { background: var(--green-bg); color: var(--green); }
-.result.failure { background: var(--red-bg); color: var(--red); }
-.result.pending { background: var(--amber-bg); color: #755300; }
-
-.disclaimer {
-  margin-top: 15px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 11px;
-}
-
-.right-column {
-  display: grid;
-  gap: 19px;
-  min-width: 0;
-}
-
-.section-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.stages {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.stage {
-  background: #f7f9fb;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 12px 9px;
-  min-width: 0;
-}
-
-.stage-number {
-  display: inline-grid;
-  place-items: center;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  background: #e2eaf1;
-  color: #405b73;
-  font-size: 11px;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.stage strong {
-  display: block;
-  font-size: 11px;
-  color: var(--navy);
-}
-
-.stage small {
-  display: block;
-  margin-top: 4px;
-  font-size: 10px;
-  color: var(--muted);
-  overflow-wrap: anywhere;
-}
-
-.stage.done {
-  background: var(--green-bg);
-  border-color: #b7ddc7;
-}
-
-.stage.done .stage-number {
-  background: var(--green);
-  color: white;
-}
-
-.stage.failed {
-  background: var(--red-bg);
-  border-color: #efc0c2;
-}
-
-.stage.failed .stage-number {
-  background: var(--red);
-  color: white;
-}
-
-.stage.current {
-  border-color: #8eb6d9;
-  background: var(--blue-light);
-}
-
-.table-tools {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 17px;
-  border-bottom: 1px solid var(--line);
-  flex-wrap: wrap;
-}
-
-.table-tools input {
-  max-width: 260px;
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #cbd5df;
-  border-radius: 4px;
-}
-
-.table-wrap { overflow-x: auto; }
-
-table {
-  border-collapse: collapse;
-  width: 100%;
-  white-space: nowrap;
-}
-
-th {
-  background: #f7f9fb;
-  color: #647589;
-  text-align: left;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-}
-
-th, td {
-  padding: 12px 14px;
-  border-bottom: 1px solid #e9eef3;
-}
-
-td { font-size: 12px; }
-tbody tr:last-child td { border-bottom: 0; }
-tbody tr:hover { background: #fafcff; }
-
-.empty {
-  text-align: center;
-  padding: 27px 15px;
-  color: var(--muted);
-  white-space: normal;
-}
-
-.status {
-  display: inline-block;
-  padding: 4px 7px;
-  border-radius: 3px;
-  font-size: 10px;
-  font-weight: 800;
-}
-
-.status-success { color: var(--green); background: var(--green-bg); }
-.status-failed { color: var(--red); background: var(--red-bg); }
-.status-pending { color: var(--amber); background: var(--amber-bg); }
-.status-rejected { color: var(--red); background: var(--red-bg); }
-
-.subtext {
-  color: var(--muted);
-  font-size: 10px;
-  margin-top: 3px;
-}
-
-.reference {
-  font-weight: 750;
-  color: var(--blue);
-}
-
-.lower-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 19px;
-}
-
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 0;
-  border-bottom: 1px solid #e9eef3;
-  font-size: 12px;
-}
-
-.stat-row:last-child { border-bottom: 0; }
-.stat-row span { color: var(--muted); }
-
-.audit-entry {
-  padding: 10px 0;
-  border-bottom: 1px solid #e9eef3;
-  font-size: 12px;
-}
-
-.audit-entry:last-child { border-bottom: 0; }
-.audit-time { font-size: 10px; color: var(--muted); }
-.audit-entry strong { display: block; margin: 3px 0; }
-
-.explain {
-  padding: 18px;
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  margin-top: 20px;
-}
-
-.explain h3 {
-  color: var(--navy);
-  font-size: 15px;
-  margin: 0 0 7px;
-}
-
-.explain p {
-  color: var(--muted);
-  font-size: 12px;
-  margin: 0 0 13px;
-}
-
-.concepts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.concept {
-  border-top: 2px solid #8daecc;
-  padding-top: 10px;
-}
-
-.concept strong {
-  color: var(--navy);
-  font-size: 12px;
-}
-
-.concept p {
-  font-size: 11px;
-  margin: 5px 0 0;
-}
-
-footer {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
-  color: var(--muted);
-  font-size: 11px;
-  margin-top: 24px;
-}
-
-@media(max-width: 1000px) {
-  .main-grid { grid-template-columns: 1fr; }
-  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media(max-width: 650px) {
-  .container { padding: 19px 13px; }
-  .topbar-inner { padding: 13px; }
-  .intro { display: block; }
-  .environment { display: inline-block; margin-top: 13px; }
-  .metrics { gap: 9px; }
-  .metric { padding: 12px; }
-  .metric-value { font-size: 22px; }
-  .stages { grid-template-columns: 1fr; }
-  .stage { display: grid; grid-template-columns: 27px 1fr; column-gap: 8px; }
-  .stage-number { grid-row: span 2; }
-  .stage strong { align-self: end; }
-  .stage small { margin-top: 2px; }
-  .lower-grid, .concepts { grid-template-columns: 1fr; }
-  .brand p { max-width: 220px; }
+  --bg:#f7f8fc;
+  --surface:#ffffff;
+  --surface-soft:#f0f3fa;
+  --ink:#17213b;
+  --muted:#65708a;
+  --line:#dfe5f0;
+  --blue:#315efb;
+  --blue-soft:#e9efff;
+  --green:#13865b;
+  --red:#c43f50;
+  --amber:#a86c0a;
+  --radius:18px;
+  --shadow:0 12px 35px rgba(25,43,83,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behaviour:smooth;scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  font-size:15px;line-height:1.6;
+}
+button,input,select{font:inherit}
+button,a{touch-action:manipulation}
+a{color:var(--blue);text-decoration:none}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{
+  outline:3px solid #9db3ff;outline-offset:3px
+}
+.wrap{width:min(1200px,calc(100% - 36px));margin:auto}
+.topbar{
+  background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)
+}
+.topbar-inner{
+  min-height:68px;display:flex;align-items:center;justify-content:space-between;
+  gap:18px;flex-wrap:wrap;padding:12px 0
+}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink);font-weight:800}
+.brand-mark{
+  width:39px;height:39px;display:grid;place-items:center;border-radius:12px;
+  background:var(--ink);color:#fff;font-size:17px;letter-spacing:-1px
+}
+.brand small{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.top-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:30px;
+  background:#edf8f2;color:var(--green);font-size:12px;font-weight:750
+}
+.pill:before{content:"";width:7px;height:7px;background:currentColor;border-radius:50%}
+.btn{
+  border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;
+  padding:10px 15px;font-weight:700;transition:transform .2s,border-color .2s
+}
+.btn:hover{transform:translateY(-1px);border-color:#aab8d5}
+.btn-primary{background:var(--blue);color:white;border-color:var(--blue)}
+.btn-primary:hover{background:#244ce0}
+.btn-dark{background:var(--ink);color:white;border-color:var(--ink)}
+.btn-small{padding:7px 11px;font-size:13px}
+.hero{
+  padding:54px 0 34px;position:relative;overflow:hidden;
+  background:
+  radial-gradient(ellipse at 90% 5%,rgba(87,126,255,.13),transparent 38%),
+  radial-gradient(ellipse at 0% 100%,rgba(69,190,159,.09),transparent 35%)
+}
+.eyebrow{
+  text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:800;
+  color:var(--blue);margin:0 0 13px
+}
+.hero h1{
+  font-size:clamp(36px,5.2vw,65px);letter-spacing:-2.6px;line-height:1.04;
+  max-width:850px;margin:0 0 18px;font-weight:850
+}
+.hero h1 span{color:var(--blue)}
+.hero-copy{max-width:730px;font-size:17px;color:var(--muted);margin:0 0 24px}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.hero-art{
+  margin-top:34px;border:1px solid rgba(188,201,229,.8);border-radius:20px;
+  background:rgba(255,255,255,.72);padding:22px;box-shadow:var(--shadow)
+}
+.flowline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:center}
+.flow-node{
+  position:relative;text-align:center;padding:17px 8px;background:white;
+  border:1px solid var(--line);border-radius:14px;min-height:91px
+}
+.flow-node strong{display:block;font-size:13px;margin-top:7px}
+.flow-node small{font-size:11px;color:var(--muted)}
+.flow-icon{font-size:21px}
+.flow-arrow{color:#8292b6;font-size:23px;font-weight:800}
+.section{padding:30px 0}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:18px}
+.section-head h2{font-size:clamp(23px,3vw,31px);letter-spacing:-.8px;margin:0}
+.section-head p{color:var(--muted);margin:5px 0 0;max-width:700px}
+.nav-tabs{
+  display:flex;gap:7px;overflow-x:auto;padding:5px 0 13px;margin-bottom:17px;
+  scrollbar-width:thin
+}
+.nav-tab{
+  flex-shrink:0;border:1px solid var(--line);background:white;color:var(--muted);
+  border-radius:10px;padding:10px 14px;font-size:13px;font-weight:750
+}
+.nav-tab.active{background:var(--ink);border-color:var(--ink);color:white}
+.panel{display:none}
+.panel.active{display:block;animation:appear .3s ease}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;box-shadow:var(--shadow);min-width:0
+}
+.card h3{margin:0 0 7px;font-size:18px;letter-spacing:-.3px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.grid{display:grid;gap:17px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:12px;font-weight:750;color:#495570}
+.field input,.field select{
+  width:100%;min-width:0;padding:12px;border:1px solid var(--line);
+  background:white;border-radius:10px;color:var(--ink)
+}
+.field input:focus,.field select:focus{border-color:var(--blue)}
+.full{grid-column:1/-1}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:18px}
+.metric{background:white;border:1px solid var(--line);border-radius:14px;padding:16px}
+.metric-label{font-size:12px;color:var(--muted);font-weight:650}
+.metric-value{font-size:27px;font-weight:850;letter-spacing:-1px;margin-top:4px}
+.metric-note{font-size:11px;color:var(--muted)}
+.status{
+  display:inline-flex;border-radius:8px;padding:5px 9px;font-size:11px;font-weight:800;
+  background:#edf0f7;color:#4d5b77
+}
+.status.success{background:#e4f6ed;color:var(--green)}
+.status.failed{background:#fff0f0;color:var(--red)}
+.status.pending{background:#fff4df;color:var(--amber)}
+.lifecycle{display:grid;gap:0;margin-top:15px}
+.stage{display:grid;grid-template-columns:31px minmax(0,1fr);gap:12px;position:relative;padding-bottom:18px}
+.stage:not(:last-child):before{
+  content:"";position:absolute;left:14px;top:30px;bottom:0;width:2px;background:var(--line)
+}
+.stage-dot{
+  position:relative;z-index:1;width:30px;height:30px;border-radius:50%;
+  background:#edf0f7;border:1px solid var(--line);display:grid;place-items:center;
+  font-size:12px;font-weight:800;color:#64708a
+}
+.stage.done .stage-dot{background:#e2f6ed;border-color:#a7dfc6;color:var(--green)}
+.stage.current .stage-dot{background:var(--blue-soft);border-color:#a8baff;color:var(--blue)}
+.stage strong{font-size:13px;display:block;padding-top:2px}
+.stage p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12px;min-width:570px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:750;background:#fafbfe}
+.empty{text-align:center;color:var(--muted);padding:27px 10px;font-size:13px}
+.notice{padding:13px 15px;border-radius:12px;background:#eef3ff;color:#334a8d;font-size:12px;margin-top:14px}
+.notice.warning{background:#fff5e5;color:#80580c}
+.notice.good{background:#eaf8f0;color:#176d4c}
+.concept-card{padding:19px;border:1px solid var(--line);border-radius:15px;background:white}
+.concept-card .num{font-size:12px;color:var(--blue);font-weight:850;letter-spacing:1px}
+.concept-card h3{margin:7px 0;font-size:16px}
+.concept-card p{margin:0;color:var(--muted);font-size:13px}
+.rail-card{border:1px solid var(--line);background:white;border-radius:15px;padding:19px}
+.rail-card h3{font-size:17px}
+.rail-card p{font-size:13px;color:var(--muted)}
+.rail-tag{font-size:11px;font-weight:800;color:var(--blue);letter-spacing:.5px}
+.route-box{padding:17px;background:#f5f7fc;border-radius:13px;border:1px solid var(--line)}
+.route-points{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0}
+.route-point{background:white;border:1px solid var(--line);border-radius:11px;padding:12px;text-align:center;flex:1;min-width:0}
+.route-point strong{display:block;font-size:13px}
+.route-point small{font-size:11px;color:var(--muted)}
+.route-arrow{color:var(--blue);font-weight:900}
+.kpi-line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kpi-line:last-child{border-bottom:0}
+.progress{height:7px;background:#e8ecf5;border-radius:20px;overflow:hidden;margin-top:10px}
+.progress span{display:block;height:100%;width:0;background:var(--blue);transition:width .4s}
+.footer{border-top:1px solid var(--line);padding:24px 0;margin-top:30px;color:var(--muted);font-size:12px}
+.footer-inner{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.hidden{display:none!important}
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--ink);color:white;padding:12px 18px;border-radius:12px;
+  box-shadow:var(--shadow);z-index:50;font-size:13px;max-width:calc(100% - 30px)
+}
+@media(max-width:850px){
+  .grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .flowline{grid-template-columns:1fr}
+  .flow-arrow{transform:rotate(90deg);text-align:center;line-height:1}
+  .flow-node{min-height:70px}
+}
+@media(max-width:600px){
+  .wrap{width:min(100% - 24px,1200px)}
+  .hero{padding:37px 0 25px}
+  .hero h1{letter-spacing:-1.6px}
+  .hero-copy{font-size:15px}
+  .grid-2,.grid-3,.form-grid{grid-template-columns:1fr}
+  .metrics{gap:9px}
+  .metric{padding:12px}
+  .metric-value{font-size:23px}
+  .card{padding:16px}
+  .section{padding:23px 0}
+  .route-points{flex-direction:column}
+  .route-point{width:100%}
+  .route-arrow{transform:rotate(90deg)}
+  .full{grid-column:auto}
+  .topbar-inner{gap:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
 </style>
 </head>
 
 <body>
-
 <header class="topbar">
-  <div class="topbar-inner">
-    <div class="brand">
-      <div class="brand-mark">FS</div>
-      <div>
-        <h1>FinTech Systems Lab</h1>
-        <p>Payment operations and transaction controls</p>
-      </div>
+  <div class="wrap topbar-inner">
+    <a href="#home" class="brand" aria-label="FinTech Systems Lab home">
+      <span class="brand-mark">F.</span>
+      <span>FinTech Systems Lab<small>Payment systems, made understandable</small></span>
+    </a>
+    <div class="top-actions">
+      <span class="pill">Interactive learning environment</span>
+      <a class="btn btn-small" href="#explorer">Explore the system ↓</a>
     </div>
-    <div class="environment">SIMULATION ONLY</div>
   </div>
 </header>
 
-<main class="container">
-
-  <section class="intro">
-    <div>
-      <div class="eyebrow">Interactive financial systems laboratory</div>
-      <h2>What happens after you make a payment?</h2>
-      <p>
-        A digital payment is more than a tap on a screen. Behind it are
-        validation rules, payment instructions, risk controls, processing
-        outcomes and records that must agree. Explore those mechanisms
-        through this interactive simulation.
-      </p>
+<main>
+<section class="hero" id="home">
+  <div class="wrap">
+    <p class="eyebrow">Follow the movement of money</p>
+    <h1>Money moves.<br><span>Systems make it happen.</span></h1>
+    <p class="hero-copy">
+      A payment is more than a tap on a screen. It involves instructions, payment rails,
+      verification, risk controls, settlement and reconciliation. Explore how these parts
+      work together through practical, illustrative simulations.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#explorer">Open payment simulator</a>
+      <button class="btn" onclick="switchTab('rails')">Explore payment rails</button>
+      <button class="btn" onclick="switchTab('crossborder')">Cross-border payments</button>
     </div>
-  </section>
 
-  <div class="notice">
-    <strong>Learning objective:</strong>
-    Follow a payment from submission to its recorded outcome. Test what
-    happens when a payment succeeds, is declined, times out or is blocked
-    by a control. All transactions here are simulated; no money moves.
+    <div class="hero-art" aria-label="Illustration of a payment lifecycle">
+      <div class="flowline">
+        <div class="flow-node"><span class="flow-icon">⌁</span><strong>Payment instruction</strong><small>A request is created</small></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-node"><span class="flow-icon">◇</span><strong>Validation & controls</strong><small>Checks are applied</small></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-node"><span class="flow-icon">⇄</span><strong>Routing & processing</strong><small>The relevant rail acts</small></div>
+      </div>
+      <div class="flowline" style="margin-top:10px">
+        <div class="flow-node"><span class="flow-icon">▤</span><strong>Settlement</strong><small>Obligations are discharged</small></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-node"><span class="flow-icon">✓</span><strong>Reconciliation</strong><small>Records are compared</small></div>
+        <div class="flow-arrow" aria-hidden="true">→</div>
+        <div class="flow-node"><span class="flow-icon">◎</span><strong>Outcome & evidence</strong><small>Status is recorded</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="explorer">
+<div class="wrap">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">The systems explorer</p>
+      <h2>Choose a part of the payment journey</h2>
+      <p>Run a simulated transaction or explore how the wider payment infrastructure works.</p>
+    </div>
   </div>
 
-  <section class="metrics">
-    <div class="metric">
-      <div class="metric-label">Submitted transactions</div>
-      <div class="metric-value" id="total-count">0</div>
-      <div class="metric-note">Current session</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Successful payment value</div>
-      <div class="metric-value" id="total-value">₹0.00</div>
-      <div class="metric-note">Successful records only</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Success rate</div>
-      <div class="metric-value" id="success-rate">—</div>
-      <div class="metric-note">Among final outcomes</div>
-    </div>
-    <div class="metric">
-      <div class="metric-label">Failed or rejected</div>
-      <div class="metric-value" id="review-count">0</div>
-      <div class="metric-note">Requires a different outcome or review</div>
-    </div>
-  </section>
+  <nav class="nav-tabs" aria-label="Payment systems sections">
+    <button class="nav-tab active" data-tab="simulator" onclick="switchTab('simulator')">Payment simulator</button>
+    <button class="nav-tab" data-tab="rails" onclick="switchTab('rails')">Payment rails</button>
+    <button class="nav-tab" data-tab="crossborder" onclick="switchTab('crossborder')">Cross-border</button>
+    <button class="nav-tab" data-tab="risk" onclick="switchTab('risk')">Risk & compliance</button>
+    <button class="nav-tab" data-tab="settlement" onclick="switchTab('settlement')">Settlement & reconciliation</button>
+    <button class="nav-tab" data-tab="recovery" onclick="switchTab('recovery')">Failures & recovery</button>
+    <button class="nav-tab" data-tab="systemmap" onclick="switchTab('systemmap')">System map</button>
+  </nav>
 
-  <div class="main-grid">
+  <div class="panel active" id="panel-simulator">
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Simulated transactions</div><div class="metric-value" id="metric-total">0</div><div class="metric-note">Current browser session</div></div>
+      <div class="metric"><div class="metric-label">Successful outcomes</div><div class="metric-value" id="metric-success">0</div><div class="metric-note">Simulated success responses</div></div>
+      <div class="metric"><div class="metric-label">Unresolved outcomes</div><div class="metric-value" id="metric-unknown">0</div><div class="metric-note">Require status verification</div></div>
+      <div class="metric"><div class="metric-label">Total simulated value</div><div class="metric-value" id="metric-value">₹0</div><div class="metric-note">Attempted payment value</div></div>
+    </div>
 
-    <section class="panel">
-      <div class="panel-heading">
-        <h3>01 · Submit a payment</h3>
-        <p>Enter a payment instruction and choose a test scenario.</p>
-      </div>
-
-      <div class="panel-content">
+    <div class="grid grid-2">
+      <section class="card">
+        <h3>Initiate a test payment</h3>
+        <p class="muted small">Create an illustrative transaction. No real money moves.</p>
         <form id="payment-form">
-          <div class="field">
-            <label for="merchant">Merchant / beneficiary</label>
-            <input id="merchant" maxlength="70"
-                   placeholder="e.g. Northstar Retail" required>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="beneficiary">Merchant or beneficiary</label>
+              <input id="beneficiary" maxlength="80" placeholder="e.g. Corner Coffee" required>
+            </div>
+            <div class="field">
+              <label for="amount">Amount (INR)</label>
+              <input id="amount" type="number" min="1" max="10000000" step="0.01" value="1250" required>
+            </div>
+            <div class="field">
+              <label for="rail">Payment rail</label>
+              <select id="rail">
+                <option value="UPI">UPI</option>
+                <option value="IMPS">IMPS</option>
+                <option value="NEFT">NEFT</option>
+                <option value="RTGS">RTGS</option>
+                <option value="Card">Card payment</option>
+                <option value="Wallet">Wallet</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="reference">Client reference (optional)</label>
+              <input id="reference" maxlength="60" placeholder="e.g. ORDER-1042">
+            </div>
+            <div class="field full">
+              <label for="scenario">Test outcome</label>
+              <select id="scenario">
+                <option value="success">Successful response</option>
+                <option value="decline">Declined transaction</option>
+                <option value="timeout">Timeout / outcome unknown</option>
+                <option value="risk">Rejected by a risk control</option>
+              </select>
+            </div>
+            <div class="full">
+              <button type="submit" class="btn btn-primary" style="width:100%">Process simulated payment →</button>
+            </div>
           </div>
-
-          <div class="field">
-            <label for="amount">Amount (INR)</label>
-            <input id="amount" type="number" min="1" max="500000"
-                   step="0.01" placeholder="2500.00" required>
-            <span class="help">Permitted simulation range: ₹1–₹5,00,000.</span>
-          </div>
-
-          <div class="field">
-            <label for="rail">Payment method</label>
-            <select id="rail">
-              <option>UPI</option>
-              <option>IMPS</option>
-              <option>NEFT</option>
-              <option>Card</option>
-              <option>Wallet</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="reference-input">Client reference</label>
-            <input id="reference-input" maxlength="40"
-                   placeholder="e.g. ORDER-10482" required>
-            <span class="help">
-              Each reference may be used only once in this session.
-            </span>
-          </div>
-
-          <div class="field">
-            <label for="scenario">Test scenario</label>
-            <select id="scenario">
-              <option value="success">Successful processing</option>
-              <option value="decline">Bank / issuer decline</option>
-              <option value="timeout">Processing timeout</option>
-              <option value="risk">Risk control rejection</option>
-            </select>
-            <span class="help">
-              This selector simulates the outcome so you can compare
-              the system's response.
-            </span>
-          </div>
-
-          <button class="button button-primary" id="submit-button"
-                  type="submit">Process simulated payment</button>
         </form>
+        <div class="notice">This is a learning simulation. It does not connect to a bank, payment gateway, card network or live payment rail.</div>
+      </section>
 
-        <div class="result" id="result" role="status"
-             aria-live="polite"></div>
-
-        <div class="disclaimer">
-          <strong>Important:</strong> This is an educational prototype.
-          It is not connected to a bank, payment gateway, card network
-          or live UPI service.
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:start">
+          <div><h3>Transaction lifecycle</h3><p class="muted small" id="lifecycle-subtitle">Your latest simulated payment will appear here.</p></div>
+          <span class="status" id="transaction-status">Awaiting input</span>
         </div>
+        <div id="lifecycle" class="lifecycle">
+          <div class="empty">Run a test payment to see the processing stages.</div>
+        </div>
+        <div id="outcome-note" class="notice hidden"></div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:17px">
+      <div class="section-head">
+        <div><h3>Transaction ledger</h3><p class="muted small">An in-memory record of test transactions created during this session.</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-small" id="export-csv">Export CSV</button>
+          <button class="btn btn-small" id="clear-ledger">Clear session</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Time</th><th>Reference</th><th>Beneficiary</th><th>Rail</th><th>Amount</th><th>Outcome</th></tr></thead>
+          <tbody id="ledger-body"><tr><td colspan="6" class="empty">No transactions yet.</td></tr></tbody>
+        </table>
       </div>
     </section>
 
-    <div class="right-column">
-
-      <section class="panel">
-        <div class="panel-heading">
-          <h3>02 · Payment processing lifecycle</h3>
-          <p>Follow the stages that a payment system must manage.</p>
-        </div>
-        <div class="panel-content">
-          <div class="stages" id="stages">
-            <div class="stage" data-stage="0">
-              <span class="stage-number">1</span>
-              <strong>Instruction</strong>
-              <small>Payment details received</small>
-            </div>
-            <div class="stage" data-stage="1">
-              <span class="stage-number">2</span>
-              <strong>Validation</strong>
-              <small>Fields and amount checked</small>
-            </div>
-            <div class="stage" data-stage="2">
-              <span class="stage-number">3</span>
-              <strong>Controls</strong>
-              <small>Duplicate reference checked</small>
-            </div>
-            <div class="stage" data-stage="3">
-              <span class="stage-number">4</span>
-              <strong>Processing</strong>
-              <small>Simulated outcome determined</small>
-            </div>
-            <div class="stage" data-stage="4">
-              <span class="stage-number">5</span>
-              <strong>Ledger</strong>
-              <small>Outcome recorded for review</small>
-            </div>
-          </div>
-          <div class="result visible pending" id="lifecycle-note">
-            <strong>Ready for a transaction</strong>
-            Submit a payment to see the lifecycle update.
-          </div>
-        </div>
+    <div class="grid grid-2" style="margin-top:17px">
+      <section class="card">
+        <h3>Reconciliation overview</h3>
+        <p class="muted small">Compare simulated transaction outcomes with the records expected by a simple illustrative ledger.</p>
+        <div class="kpi-line"><span>Successful responses</span><strong id="rec-success">0</strong></div>
+        <div class="kpi-line"><span>Declined / rejected</span><strong id="rec-failed">0</strong></div>
+        <div class="kpi-line"><span>Unknown outcomes to verify</span><strong id="rec-unknown">0</strong></div>
+        <div class="notice warning">A timeout is not proof of failure. Check the authoritative transaction status before deciding whether a retry is safe.</div>
       </section>
-
-      <section class="panel">
-        <div class="panel-heading section-heading">
-          <div>
-            <h3>03 · Transaction ledger</h3>
-            <p>A record of the simulated payment attempts and outcomes.</p>
-          </div>
-          <button class="button" id="export-button" type="button">
-            Export CSV
-          </button>
-        </div>
-
-        <div class="table-tools">
-          <strong style="font-size:12px">Session transactions</strong>
-          <input id="search" type="search"
-                 placeholder="Search reference or merchant"
-                 aria-label="Search transactions">
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Transaction ID</th>
-                <th>Reference</th>
-                <th>Merchant</th>
-                <th>Amount</th>
-                <th>Rail</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="ledger-body">
-              <tr>
-                <td colspan="6" class="empty">
-                  No records yet. Submit a simulated payment to begin.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <section class="card">
+        <h3>Audit trail</h3>
+        <p class="muted small">Illustrative events generated by the simulator.</p>
+        <div id="audit-trail" class="lifecycle"><div class="empty">Events will appear when you run a simulation.</div></div>
       </section>
-
-      <div class="lower-grid">
-
-        <section class="panel">
-          <div class="panel-heading">
-            <h3>04 · Reconciliation</h3>
-            <p>Compare recorded transactions by outcome.</p>
-          </div>
-          <div class="panel-content">
-            <div class="stat-row">
-              <span>Successful transactions</span>
-              <strong id="rec-success">0</strong>
-            </div>
-            <div class="stat-row">
-              <span>Successful value</span>
-              <strong id="rec-value">₹0.00</strong>
-            </div>
-            <div class="stat-row">
-              <span>Failed transactions</span>
-              <strong id="rec-failed">0</strong>
-            </div>
-            <div class="stat-row">
-              <span>Rejected transactions</span>
-              <strong id="rec-rejected">0</strong>
-            </div>
-            <div class="stat-row">
-              <span>Pending / unknown outcome</span>
-              <strong id="rec-pending">0</strong>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-heading">
-            <h3>05 · Control audit trail</h3>
-            <p>Recent events generated by the simulation.</p>
-          </div>
-          <div class="panel-content" id="audit">
-            <div class="audit-entry">
-              <span class="audit-time">Initialised</span>
-              <strong>Simulation ready</strong>
-              <div class="subtext">
-                No real payment network is connected.
-              </div>
-            </div>
-          </div>
-        </section>
-
-      </div>
     </div>
   </div>
 
-  <section class="explain">
-    <h3>What this simulation demonstrates</h3>
-    <p>
-      These are separate responsibilities within a payment-processing
-      workflow. Real implementations vary by payment method, provider
-      and financial institution.
-    </p>
-    <div class="concepts">
-      <div class="concept">
-        <strong>Validation and duplicate prevention</strong>
-        <p>
-          Invalid amounts should be stopped early. Repeated client
-          references are blocked here to demonstrate duplicate protection.
-          Production systems need stronger, persistent idempotency controls.
-        </p>
-      </div>
-      <div class="concept">
-        <strong>Failures and uncertain outcomes</strong>
-        <p>
-          A decline is not the same as a timeout. When a timeout occurs,
-          the final outcome may be unknown. A real system checks transaction
-          status before attempting a retry.
-        </p>
-      </div>
-      <div class="concept">
-        <strong>Ledger and reconciliation</strong>
-        <p>
-          Payment activity must be recorded and compared with authoritative
-          payment-provider or bank records. This prototype summarises its own
-          simulated records; it does not reconcile against a real bank.
-        </p>
-      </div>
+  <div class="panel" id="panel-rails">
+    <div class="grid grid-3">
+      <article class="rail-card"><span class="rail-tag">ACCOUNT-TO-ACCOUNT</span><h3>UPI</h3><p>India's interoperable instant payment system enables payments between participating bank accounts through supported applications and payment addresses.</p><div class="notice">Typical use: everyday transfers, QR payments and merchant collections.</div></article>
+      <article class="rail-card"><span class="rail-tag">INSTANT TRANSFER</span><h3>IMPS</h3><p>An Indian interbank electronic funds transfer service designed for immediate payments, available subject to participating institutions and their rules.</p><div class="notice">Typical use: urgent account-to-account transfers.</div></article>
+      <article class="rail-card"><span class="rail-tag">BATCH-BASED TRANSFER</span><h3>NEFT</h3><p>An RBI-operated electronic funds transfer system that processes transactions in half-hourly batches and operates around the clock.</p><div class="notice">Typical use: retail and business bank transfers.</div></article>
+      <article class="rail-card"><span class="rail-tag">HIGH-VALUE TRANSFER</span><h3>RTGS</h3><p>Real Time Gross Settlement processes transfers individually in real time. It is intended for high-value transfers and has an RBI-prescribed minimum of ₹2 lakh.</p><div class="notice">Typical use: high-value business and institutional transfers.</div></article>
+      <article class="rail-card"><span class="rail-tag">CARD NETWORK</span><h3>Card payments</h3><p>A card transaction can involve the merchant, acquirer, card network, issuer, authorisation, clearing and settlement. Authorisation and final settlement are distinct events.</p><div class="notice">Typical use: online and in-store purchases.</div></article>
+      <article class="rail-card"><span class="rail-tag">STORED VALUE</span><h3>Wallets</h3><p>A wallet stores or accesses value under its own operating model. Some wallet payments use a card or bank transfer behind the scenes; the exact path depends on the product.</p><div class="notice">Typical use: app-based payments and stored-value transactions.</div></article>
     </div>
-  </section>
+    <div class="notice warning">This is a simplified educational comparison, not a live service-level guarantee. Availability, limits, settlement arrangements and transaction rules depend on the rail and participating institutions.</div>
+  </div>
 
-  <footer>
-    <span><strong>FinTech Systems Lab</strong> · Educational prototype</span>
-    <span>Session data is held in browser memory and resets on refresh.</span>
-  </footer>
+  <div class="panel" id="panel-crossborder">
+    <div class="grid grid-2">
+      <section class="card">
+        <p class="eyebrow">International payment simulator</p>
+        <h3>Explore different payment corridors</h3>
+        <p class="muted small">Change the origin, destination, amount and illustrative fee assumptions. Figures are examples, not live FX quotes.</p>
+        <div class="form-grid">
+          <div class="field"><label for="cb-origin">Sending country</label><select id="cb-origin"><option value="IN">India (INR)</option><option value="US">United States (USD)</option><option value="GB">United Kingdom (GBP)</option><option value="SG">Singapore (SGD)</option><option value="AE">United Arab Emirates (AED)</option></select></div>
+          <div class="field"><label for="cb-destination">Receiving country</label><select id="cb-destination"><option value="US">United States (USD)</option><option value="GB">United Kingdom (GBP)</option><option value="IN">India (INR)</option><option value="SG">Singapore (SGD)</option><option value="AE">United Arab Emirates (AED)</option><option value="EU">Euro area (EUR)</option></select></div>
+          <div class="field"><label for="cb-amount">Amount sent</label><input id="cb-amount" type="number" min="1" max="100000000" value="50000"></div>
+          <div class="field"><label for="cb-fee">Illustrative transfer fee</label><input id="cb-fee" type="number" min="0" max="1000000" value="750"></div>
+          <div class="field full"><label for="cb-fx">Illustrative FX rate (destination currency per 1 sending currency)</label><input id="cb-fx" type="number" min="0.000001" step="any" value="0.012" required></div>
+          <div class="full"><button class="btn btn-primary" type="button" id="cb-calculate" style="width:100%">Calculate illustrative transfer</button></div>
+        </div>
+      </section>
+      <section class="card">
+        <h3>Estimated transfer breakdown</h3>
+        <div class="route-box">
+          <div class="route-points">
+            <div class="route-point"><strong id="cb-from-label">India</strong><small>Sender / originating institution</small></div>
+            <div class="route-arrow">→</div>
+            <div class="route-point"><strong id="cb-to-label">United States</strong><small>Beneficiary institution</small></div>
+          </div>
+          <div class="kpi-line"><span>Amount sent</span><strong id="cb-sent">INR 50,000.00</strong></div>
+          <div class="kpi-line"><span>Illustrative transfer fee</span><strong id="cb-fee-result">INR 750.00</strong></div>
+          <div class="kpi-line"><span>Illustrative FX rate</span><strong id="cb-rate-result">0.012</strong></div>
+          <div class="kpi-line"><span>Estimated recipient amount</span><strong id="cb-received">USD 591.00</strong></div>
+        </div>
+        <div class="notice warning">This simplified calculation deducts the entered fee from the sending amount before applying the entered rate. Real transfers may include separate FX spreads, intermediary fees, receiving-bank charges, taxes and different settlement arrangements.</div>
+      </section>
+    </div>
 
+    <section class="card" style="margin-top:17px">
+      <h3>What may happen behind the scenes?</h3>
+      <div class="grid grid-3" style="margin-top:16px">
+        <div class="concept-card"><span class="num">01 / INSTRUCTION</span><h3>Payment initiation</h3><p>The sender provides beneficiary details, amount, purpose and other information required by the provider.</p></div>
+        <div class="concept-card"><span class="num">02 / CONTROLS</span><h3>Compliance checks</h3><p>The institutions and service providers apply relevant identity, sanctions, fraud, reporting and regulatory controls.</p></div>
+        <div class="concept-card"><span class="num">03 / FUNDING</span><h3>Currency conversion</h3><p>Where needed, the provider determines the applicable exchange rate and arranges the required currency funding.</p></div>
+        <div class="concept-card"><span class="num">04 / ROUTING</span><h3>Correspondent or local rails</h3><p>The transfer may use correspondent banking, local clearing systems, payment networks or specialised providers.</p></div>
+        <div class="concept-card"><span class="num">05 / SETTLEMENT</span><h3>Inter-institution obligations</h3><p>Institutions settle their obligations through the arrangements relevant to the route. This is not always the same instant as initiation.</p></div>
+        <div class="concept-card"><span class="num">06 / DELIVERY</span><h3>Beneficiary credit</h3><p>The receiving institution applies its checks and processes the credit. Timing and confirmation depend on the route and provider.</p></div>
+      </div>
+      <div class="notice">Not every transfer follows the same path. The corridor, currency, provider, purpose, funding method and receiving institution determine the actual workflow.</div>
+    </section>
+  </div>
+
+  <div class="panel" id="panel-risk">
+    <div class="grid grid-2">
+      <article class="card"><p class="eyebrow">Before processing</p><h3>Validation</h3><p class="muted">Checks that the payment instruction is complete and internally consistent.</p><div class="kpi-line"><span>Required fields</span><strong>Present and valid</strong></div><div class="kpi-line"><span>Amount and limits</span><strong>Within applicable rules</strong></div><div class="kpi-line"><span>Beneficiary details</span><strong>Format and eligibility checks</strong></div></article>
+      <article class="card"><p class="eyebrow">During processing</p><h3>Fraud and risk controls</h3><p class="muted">Controls evaluate whether a transaction should proceed, be challenged, be held or be declined.</p><div class="kpi-line"><span>Transaction patterns</span><strong>Velocity and anomalies</strong></div><div class="kpi-line"><span>Account signals</span><strong>Risk indicators</strong></div><div class="kpi-line"><span>Decision outcome</span><strong>Allow, review or reject</strong></div></article>
+      <article class="card"><p class="eyebrow">Regulatory controls</p><h3>Compliance</h3><p class="muted">Applicable controls depend on the country, institution, product, transaction type and payment corridor.</p><div class="kpi-line"><span>Customer due diligence</span><strong>Where applicable</strong></div><div class="kpi-line"><span>Sanctions screening</span><strong>Where applicable</strong></div><div class="kpi-line"><span>Reporting requirements</span><strong>Jurisdiction-specific</strong></div></article>
+      <article class="card"><p class="eyebrow">After processing</p><h3>Monitoring and auditability</h3><p class="muted">Records help institutions investigate exceptions, resolve disputes, reconcile transactions and demonstrate control operation.</p><div class="kpi-line"><span>Event records</span><strong>Timestamped evidence</strong></div><div class="kpi-line"><span>Exception handling</span><strong>Investigate and resolve</strong></div><div class="kpi-line"><span>Access controls</span><strong>Role-based where required</strong></div></article>
+    </div>
+    <div class="notice warning">Real-world risk systems are more complex than this overview. A simulated approval or rejection here does not represent an actual bank or regulator's decision.</div>
+  </div>
+
+  <div class="panel" id="panel-settlement">
+    <div class="grid grid-2">
+      <section class="card"><p class="eyebrow">Movement of obligations</p><h3>Settlement is not the same as authorisation</h3><p class="muted">An authorisation indicates that a transaction has received a particular decision. Clearing calculates or communicates obligations. Settlement discharges obligations according to the relevant system's rules.</p><div class="lifecycle"><div class="stage done"><div class="stage-dot">1</div><div><strong>Instruction accepted</strong><p>A request has been received and validated.</p></div></div><div class="stage done"><div class="stage-dot">2</div><div><strong>Payment processed or authorised</strong><p>The rail or relevant institution processes the instruction.</p></div></div><div class="stage current"><div class="stage-dot">3</div><div><strong>Clearing and settlement</strong><p>The applicable system calculates or discharges obligations.</p></div></div><div class="stage"><div class="stage-dot">4</div><div><strong>Reconciliation</strong><p>Records from different systems are compared and exceptions investigated.</p></div></div></div></section>
+      <section class="card"><p class="eyebrow">Operational control</p><h3>Reconciliation</h3><p class="muted">Reconciliation checks whether records agree across systems. A mismatch may arise from timing, missing records, duplicate entries, incorrect amounts or unresolved status.</p><div class="concept-card"><h3>Example exception</h3><p>A payment provider records a successful response, but the merchant's order system has not updated. The operations team compares references, amounts, timestamps and authoritative payment status before resolving the mismatch.</p></div><div class="notice good">Good reconciliation identifies differences; investigation establishes why they occurred; controlled resolution documents what was done.</div></section>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-recovery">
+    <div class="grid grid-2">
+      <article class="card"><span class="status failed">DECLINED</span><h3 style="margin-top:12px">The transaction was rejected</h3><p class="muted">A decline is a negative response for that attempt. The next step depends on the reason, rail and authoritative status.</p><ul><li>Capture the response or reason code where available.</li><li>Check whether the issue is correctable.</li><li>Retry only when permitted and appropriate.</li></ul></article>
+      <article class="card"><span class="status pending">UNKNOWN</span><h3 style="margin-top:12px">The request timed out</h3><p class="muted">The caller did not receive a conclusive response in time. The payment may still have been processed.</p><ul><li>Retain the original transaction reference.</li><li>Query the provider or rail for authoritative status.</li><li>Avoid creating a duplicate payment before checking the original.</li></ul></article>
+      <article class="card"><span class="status pending">PENDING</span><h3 style="margin-top:12px">Processing is not complete</h3><p class="muted">Some workflows have intermediate states. A pending status should not automatically be treated as either success or failure.</p><ul><li>Follow the provider's status-check process.</li><li>Respect applicable time limits and operating rules.</li><li>Escalate unresolved exceptions through the correct channel.</li></ul></article>
+      <article class="card"><span class="status">MISMATCH</span><h3 style="margin-top:12px">Records do not agree</h3><p class="muted">Different systems may update at different times or record different aspects of the same transaction.</p><ul><li>Match stable transaction identifiers.</li><li>Compare amounts, timestamps and status history.</li><li>Document corrections and preserve an audit trail.</li></ul></article>
+    </div>
+    <div class="notice warning">The correct recovery action depends on the payment rail and provider's documented process. Never assume a timeout means the payment failed.</div>
+  </div>
+
+  <div class="panel" id="panel-systemmap">
+    <section class="card">
+      <p class="eyebrow">A simplified infrastructure map</p>
+      <h3>Who may participate in a payment?</h3>
+      <p class="muted">The parties differ by payment method. This is a conceptual map, not a claim that every payment passes through every component.</p>
+      <div class="grid grid-3" style="margin-top:18px">
+        <div class="concept-card"><span class="num">01</span><h3>Customer or payer</h3><p>Initiates the payment through an application, bank channel, card or other instrument.</p></div>
+        <div class="concept-card"><span class="num">02</span><h3>Merchant or beneficiary</h3><p>Receives the payment instruction or funds, depending on the payment arrangement.</p></div>
+        <div class="concept-card"><span class="num">03</span><h3>Application or provider</h3><p>Collects information and may manage payment orchestration, customer experience and status.</p></div>
+        <div class="concept-card"><span class="num">04</span><h3>Issuer or sending bank</h3><p>May authenticate the customer, evaluate the transaction and provide or debit funds.</p></div>
+        <div class="concept-card"><span class="num">05</span><h3>Network or payment system</h3><p>Routes, exchanges or processes instructions according to its rules and technical design.</p></div>
+        <div class="concept-card"><span class="num">06</span><h3>Acquirer or receiving bank</h3><p>May support merchant acceptance, receive payment messages or credit the beneficiary.</p></div>
+        <div class="concept-card"><span class="num">07</span><h3>Risk and compliance</h3><p>Applies relevant fraud, identity, sanctions and regulatory controls.</p></div>
+        <div class="concept-card"><span class="num">08</span><h3>Settlement infrastructure</h3><p>Supports the discharge of obligations between participating institutions.</p></div>
+        <div class="concept-card"><span class="num">09</span><h3>Reconciliation and operations</h3><p>Compares records, investigates exceptions and maintains operational evidence.</p></div>
+      </div>
+      <div class="notice">For example, a UPI transfer and a card purchase have different participants and processing arrangements. Use the relevant payment-rail view rather than treating this map as one universal sequence.</div>
+    </section>
+  </div>
+</div>
+</section>
 </main>
 
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span><strong>FinTech Systems Lab</strong> · Everything in finance is connected.</span>
+    <span>G Hari Charan, Design &amp; Curator</span>
+  </div>
+  <div class="wrap small" style="margin-top:10px">Educational simulations only. No live payments, bank connections, real-time exchange rates or investment recommendations are provided.</div>
+</footer>
+
+<div id="toast" class="hidden" role="status" aria-live="polite"></div>
+
 <script>
-(function () {
-  "use strict";
+"use strict";
 
-  const $ = id => document.getElementById(id);
-  const transactions = [];
-  const auditEvents = [];
-  let nextId = 1;
-  let processing = false;
+const transactions = [];
+const auditEvents = [];
+let latestTransaction = null;
 
-  const money = value =>
-    new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+const currencies = {
+  IN:{name:"India",currency:"INR"},
+  US:{name:"United States",currency:"USD"},
+  GB:{name:"United Kingdom",currency:"GBP"},
+  SG:{name:"Singapore",currency:"SGD"},
+  AE:{name:"United Arab Emirates",currency:"AED"},
+  EU:{name:"Euro area",currency:"EUR"}
+};
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,character=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[character]);
+}
+
+function money(value,currency="INR"){
+  try{
+    return new Intl.NumberFormat("en-IN",{
+      style:"currency",currency,maximumFractionDigits:2
     }).format(value);
-
-  const timestamp = () =>
-    new Date().toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
-
-  function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, character => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[character]);
+  }catch{
+    return currency+" "+Number(value).toFixed(2);
   }
-
-  function logEvent(title, detail) {
-    auditEvents.unshift({
-      time: timestamp(),
-      title,
-      detail
-    });
-    auditEvents.splice(8);
-    renderAudit();
-  }
-
-  function showResult(type, title, message) {
-    const result = $("result");
-    result.className = "result visible " + type;
-    result.replaceChildren();
-
-    const heading = document.createElement("strong");
-    heading.textContent = title;
-    result.append(heading, document.createTextNode(message));
-  }
-
-  function updateLifecycle(currentStage, outcome) {
-    document.querySelectorAll(".stage").forEach((element, index) => {
-      element.classList.remove("done", "failed", "current");
-
-      if (index < currentStage) {
-        element.classList.add("done");
-      } else if (index === currentStage) {
-        element.classList.add(outcome === "failed" ? "failed" : "current");
-      }
-    });
-
-    const note = $("lifecycle-note");
-
-    if (outcome === "ready") {
-      note.className = "result visible pending";
-      note.innerHTML =
-        "<strong>Ready for a transaction</strong>" +
-        "Submit a payment to see the lifecycle update.";
-    } else if (outcome === "success") {
-      note.className = "result visible success";
-      note.innerHTML =
-        "<strong>Processing completed</strong>" +
-        "The simulated payment reached a successful outcome and was recorded.";
-    } else if (outcome === "unknown") {
-      note.className = "result visible pending";
-      note.innerHTML =
-        "<strong>Outcome remains unknown</strong>" +
-        "The transaction is pending. A real system must check its status before retrying.";
-    } else {
-      note.className = "result visible failure";
-      note.innerHTML =
-        "<strong>Processing did not complete successfully</strong>" +
-        "Review the recorded outcome and reason in the transaction ledger.";
-    }
-  }
-
-  function getTotals() {
-    const success = transactions.filter(t => t.status === "Success");
-    const failed = transactions.filter(t => t.status === "Failed");
-    const rejected = transactions.filter(t => t.status === "Rejected");
-    const pending = transactions.filter(t => t.status === "Pending");
-    const finalCount = success.length + failed.length + rejected.length;
-    const successValue = success.reduce((sum, t) => sum + t.amount, 0);
-
-    return {
-      success, failed, rejected, pending, finalCount, successValue
-    };
-  }
-
-  function renderMetrics() {
-    const totals = getTotals();
-
-    $("total-count").textContent = transactions.length;
-    $("total-value").textContent = money(totals.successValue);
-    $("success-rate").textContent = totals.finalCount
-      ? Math.round(totals.success.length / totals.finalCount * 100) + "%"
-      : "—";
-    $("review-count").textContent =
-      totals.failed.length + totals.rejected.length;
-
-    $("rec-success").textContent = totals.success.length;
-    $("rec-value").textContent = money(totals.successValue);
-    $("rec-failed").textContent = totals.failed.length;
-    $("rec-rejected").textContent = totals.rejected.length;
-    $("rec-pending").textContent = totals.pending.length;
-  }
-
-  function renderLedger() {
-    const query = $("search").value.trim().toLowerCase();
-
-    const filtered = transactions.filter(t =>
-      (t.id + " " + t.reference + " " + t.merchant + " " + t.status)
-        .toLowerCase().includes(query)
-    );
-
-    const body = $("ledger-body");
-    body.replaceChildren();
-
-    if (!filtered.length) {
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-      cell.colSpan = 6;
-      cell.className = "empty";
-      cell.textContent = transactions.length
-        ? "No matching transactions."
-        : "No records yet. Submit a simulated payment to begin.";
-      row.append(cell);
-      body.append(row);
-      return;
-    }
-
-    filtered.forEach(t => {
-      const row = document.createElement("tr");
-
-      const values = [
-        t.id, t.reference, t.merchant, money(t.amount), t.rail
-      ];
-
-      values.forEach((value, index) => {
-        const cell = document.createElement("td");
-        cell.textContent = value;
-
-        if (index === 0) cell.className = "reference";
-        if (index === 3) cell.style.fontVariantNumeric = "tabular-nums";
-
-        row.append(cell);
-      });
-
-      const statusCell = document.createElement("td");
-      const badge = document.createElement("span");
-      badge.className = "status status-" + t.status.toLowerCase();
-      badge.textContent = t.status;
-      statusCell.append(badge);
-
-      if (t.reason) {
-        const reason = document.createElement("div");
-        reason.className = "subtext";
-        reason.textContent = t.reason;
-        statusCell.append(reason);
-      }
-
-      row.append(statusCell);
-      body.append(row);
-    });
-  }
-
-  function renderAudit() {
-    const container = $("audit");
-    container.replaceChildren();
-
-    auditEvents.forEach(event => {
-      const entry = document.createElement("div");
-      entry.className = "audit-entry";
-
-      const time = document.createElement("span");
-      time.className = "audit-time";
-      time.textContent = event.time;
-
-      const title = document.createElement("strong");
-      title.textContent = event.title;
-
-      const detail = document.createElement("div");
-      detail.className = "subtext";
-      detail.textContent = event.detail;
-
-      entry.append(time, title, detail);
-      container.append(entry);
-    });
-  }
-
-  function render() {
-    renderMetrics();
-    renderLedger();
-  }
-
-  function addTransaction(data) {
-    const transaction = {
-      id: "FTL-" + String(nextId++).padStart(6, "0"),
-      createdAt: new Date().toISOString(),
-      status: "Pending",
-      reason: "Awaiting simulated outcome",
-      ...data
-    };
-
-    transactions.unshift(transaction);
-    render();
-    return transaction;
-  }
-
-  $("payment-form").addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    if (processing) return;
-
-    const merchant = $("merchant").value.trim();
-    const amount = Number($("amount").value);
-    const rail = $("rail").value;
-    const reference = $("reference-input").value.trim();
-    const scenario = $("scenario").value;
-
-    if (!merchant || !reference) {
-      showResult("failure", "Validation failed",
-        "Enter both a merchant and a client reference.");
-      return;
-    }
-
-    if (!Number.isFinite(amount) || amount < 1 || amount > 500000) {
-      showResult("failure", "Invalid amount",
-        "Enter an amount between ₹1 and ₹5,00,000.");
-      logEvent("Validation blocked",
-        "The submitted amount was outside the permitted range.");
-      return;
-    }
-
-    const duplicate = transactions.some(t =>
-      t.reference.toLowerCase() === reference.toLowerCase()
-    );
-
-    if (duplicate) {
-      showResult("failure", "Duplicate reference blocked",
-        "This client reference already exists. No second transaction was processed.");
-      logEvent("Duplicate blocked",
-        "Reference " + reference + " already exists.");
-      return;
-    }
-
-    processing = true;
-    $("submit-button").disabled = true;
-    $("submit-button").textContent = "Processing…";
-
-    updateLifecycle(0, "current");
-
-    const transaction = addTransaction({
-      merchant, amount, rail, reference, scenario
-    });
-
-    logEvent("Instruction received",
-      transaction.id + " was submitted to the simulation.");
-
-    updateLifecycle(1, "current");
-
-    window.setTimeout(() => {
-      updateLifecycle(2, "current");
-
-      logEvent("Validation and duplicate checks passed",
-        transaction.id + " passed the client-side controls.");
-
-      window.setTimeout(() => {
-        updateLifecycle(3, "current");
-
-        logEvent("Processing scenario selected",
-          "The selected outcome is: " + scenario + ".");
-
-        window.setTimeout(() => {
-          if (scenario === "success") {
-            transaction.status = "Success";
-            transaction.reason = "Authorised in simulation";
-
-            showResult("success", "Payment successful",
-              transaction.id + " reached a simulated successful outcome. No real funds moved.");
-
-            logEvent("Payment successful",
-              transaction.id + " was recorded as successful.");
-
-            updateLifecycle(4, "success");
-
-          } else if (scenario === "decline") {
-            transaction.status = "Failed";
-            transaction.reason = "Simulated bank / issuer decline";
-
-            showResult("failure", "Payment declined",
-              transaction.id + " was recorded as failed. A real system would follow the provider's response and payment-rail rules.");
-
-            logEvent("Payment failed",
-              transaction.id + " received a simulated decline.");
-
-            updateLifecycle(4, "failed");
-
-          } else if (scenario === "timeout") {
-            transaction.status = "Pending";
-            transaction.reason = "Timeout; final outcome unknown";
-
-            showResult("pending", "Outcome not confirmed",
-              transaction.id + " remains pending. Do not assume it failed; a real system should query the authoritative status before retrying.");
-
-            logEvent("Processing timeout",
-              transaction.id + " has an unknown outcome and remains pending.");
-
-            updateLifecycle(4, "unknown");
-
-          } else {
-            transaction.status = "Rejected";
-            transaction.reason = "Simulated risk-control rejection";
-
-            showResult("failure", "Payment rejected",
-              transaction.id + " was rejected by the simulated control before successful authorisation.");
-
-            logEvent("Risk control rejected payment",
-              transaction.id + " was recorded as rejected.");
-
-            updateLifecycle(4, "failed");
-          }
-
-          processing = false;
-          $("submit-button").disabled = false;
-          $("submit-button").textContent = "Process simulated payment";
-
-          render();
-        }, 400);
-      }, 350);
-    }, 300);
+}
+
+function timeNow(){
+  return new Date().toLocaleTimeString("en-IN",{
+    hour:"2-digit",minute:"2-digit",second:"2-digit"
   });
+}
 
-  $("search").addEventListener("input", renderLedger);
+function toast(message){
+  const el=document.getElementById("toast");
+  el.textContent=message;
+  el.classList.remove("hidden");
+  clearTimeout(toast.timer);
+  toast.timer=setTimeout(()=>el.classList.add("hidden"),2800);
+}
 
-  $("export-button").addEventListener("click", function () {
-    if (!transactions.length) {
-      showResult("failure", "No records to export",
-        "Submit at least one transaction first.");
-      return;
-    }
-
-    const columns = [
-      "transaction_id", "created_at", "client_reference",
-      "merchant", "amount_inr", "payment_rail", "status", "reason"
-    ];
-
-    const quote = value =>
-      '"' + String(value).replace(/"/g, '""') + '"';
-
-    const rows = transactions.map(t => [
-      t.id, t.createdAt, t.reference, t.merchant,
-      t.amount.toFixed(2), t.rail, t.status, t.reason
-    ].map(quote).join(","));
-
-    const csv = [columns.join(","), ...rows].join("\r\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = "fintech-systems-lab-transactions.csv";
-    document.body.append(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-
-    logEvent("Ledger exported",
-      transactions.length + " simulated transaction records exported.");
+function switchTab(tab){
+  const valid=["simulator","rails","crossborder","risk","settlement","recovery","systemmap"];
+  if(!valid.includes(tab)) return;
+  document.querySelectorAll(".nav-tab").forEach(button=>{
+    button.classList.toggle("active",button.dataset.tab===tab);
   });
+  document.querySelectorAll(".panel").forEach(panel=>{
+    panel.classList.toggle("active",panel.id==="panel-"+tab);
+  });
+  if(tab==="simulator") document.getElementById("explorer").scrollIntoView({behavior:"smooth",block:"start"});
+  else document.getElementById("explorer").scrollIntoView({behavior:"smooth",block:"start"});
+}
 
-  logEvent("Simulation initialised",
-    "Payment controls, ledger and reconciliation are ready.");
+function addAudit(message){
+  auditEvents.unshift({time:timeNow(),message});
+  auditEvents.splice(12);
+  renderAudit();
+}
 
-  render();
-})();
+function renderAudit(){
+  const el=document.getElementById("audit-trail");
+  if(!auditEvents.length){
+    el.innerHTML='<div class="empty">Events will appear when you run a simulation.</div>';
+    return;
+  }
+  el.innerHTML=auditEvents.map(event=>`
+    <div class="stage done">
+      <div class="stage-dot">✓</div>
+      <div><strong>${escapeHTML(event.message)}</strong><p>${escapeHTML(event.time)} · Simulated event</p></div>
+    </div>`).join("");
+}
+
+function lifecycleStages(tx){
+  const stages=[
+    ["Payment instruction","The simulator received the payment details."],
+    ["Basic validation","The amount and required fields were checked."],
+    ["Risk and decision controls","The selected test scenario determined the illustrative outcome."],
+    ["Rail processing response","A simulated response was assigned to the transaction."],
+    ["Status and record keeping","The outcome was added to the local session ledger."]
+  ];
+  let stopAt=4;
+  if(tx.scenario==="risk") stopAt=2;
+  if(tx.scenario==="decline") stopAt=3;
+  return stages.map((stage,index)=>{
+    let state=index<=stopAt?"done":"";
+    if(index===stopAt && tx.outcome==="UNKNOWN") state="current";
+    const marker=index<stopAt?"✓":index+1;
+    let detail=stage[1];
+    if(index===2 && tx.scenario==="risk") detail="The illustrative risk control rejected the test transaction.";
+    if(index===3 && tx.scenario==="decline") detail="The simulated response was a decline.";
+    if(index===3 && tx.outcome==="UNKNOWN") detail="No conclusive response was received in this timeout scenario.";
+    if(index===4 && tx.outcome==="UNKNOWN") detail="The attempt is recorded as unresolved; verify authoritative status before retrying.";
+    if(index===4 && tx.outcome==="SUCCESS") detail="A simulated success response was recorded. No real funds were moved.";
+    if(index===4 && tx.outcome==="FAILED") detail="The simulated negative outcome was recorded.";
+    return `<div class="stage ${state}"><div class="stage-dot">${marker}</div><div><strong>${escapeHTML(stage[0])}</strong><p>${escapeHTML(detail)}</p></div></div>`;
+  }).join("");
+}
+
+function renderLatest(tx){
+  const status=document.getElementById("transaction-status");
+  status.className="status "+(tx.outcome==="SUCCESS"?"success":tx.outcome==="UNKNOWN"?"pending":"failed");
+  status.textContent=tx.outcome==="SUCCESS"?"Simulated success":tx.outcome==="UNKNOWN"?"Outcome unknown":"Simulated rejection";
+  document.getElementById("lifecycle-subtitle").textContent=
+    `${tx.reference} · ${tx.rail} · ${money(tx.amount)}`;
+  document.getElementById("lifecycle").innerHTML=lifecycleStages(tx);
+
+  const note=document.getElementById("outcome-note");
+  note.classList.remove("hidden","warning","good");
+  if(tx.outcome==="SUCCESS"){
+    note.classList.add("good");
+    note.textContent="The test scenario returned a success response. This does not prove that a real payment occurred.";
+  }else if(tx.outcome==="UNKNOWN"){
+    note.classList.add("warning");
+    note.textContent="The outcome is unknown in this simulation. In a real payment workflow, check the authoritative transaction status before attempting another payment.";
+  }else{
+    note.classList.add("warning");
+    note.textContent="The test scenario returned a negative outcome. In a real system, consult the rail or provider response and applicable recovery process.";
+  }
+}
+
+function renderLedger(){
+  const body=document.getElementById("ledger-body");
+  if(!transactions.length){
+    body.innerHTML='<tr><td colspan="6" class="empty">No transactions yet.</td></tr>';
+  }else{
+    body.innerHTML=transactions.map(tx=>{
+      const statusClass=tx.outcome==="SUCCESS"?"success":tx.outcome==="UNKNOWN"?"pending":"failed";
+      const statusText=tx.outcome==="SUCCESS"?"Success":tx.outcome==="UNKNOWN"?"Unknown":"Rejected";
+      return `<tr>
+        <td>${escapeHTML(tx.time)}</td>
+        <td>${escapeHTML(tx.reference)}</td>
+        <td>${escapeHTML(tx.beneficiary)}</td>
+        <td>${escapeHTML(tx.rail)}</td>
+        <td>${escapeHTML(money(tx.amount))}</td>
+        <td><span class="status ${statusClass}">${statusText}</span></td>
+      </tr>`;
+    }).join("");
+  }
+
+  const total=transactions.length;
+  const successes=transactions.filter(tx=>tx.outcome==="SUCCESS").length;
+  const unknown=transactions.filter(tx=>tx.outcome==="UNKNOWN").length;
+  const failures=transactions.filter(tx=>tx.outcome==="FAILED").length;
+  const value=transactions.reduce((sum,tx)=>sum+tx.amount,0);
+
+  document.getElementById("metric-total").textContent=total;
+  document.getElementById("metric-success").textContent=successes;
+  document.getElementById("metric-unknown").textContent=unknown;
+  document.getElementById("metric-value").textContent=money(value);
+  document.getElementById("rec-success").textContent=successes;
+  document.getElementById("rec-failed").textContent=failures;
+  document.getElementById("rec-unknown").textContent=unknown;
+}
+
+document.getElementById("payment-form").addEventListener("submit",event=>{
+  event.preventDefault();
+
+  const beneficiary=document.getElementById("beneficiary").value.trim();
+  const amount=Number(document.getElementById("amount").value);
+  const rail=document.getElementById("rail").value;
+  const scenario=document.getElementById("scenario").value;
+  const suppliedRef=document.getElementById("reference").value.trim();
+
+  if(!beneficiary || !Number.isFinite(amount) || amount<=0 || amount>10000000){
+    toast("Enter a valid beneficiary and an amount between ₹1 and ₹1 crore.");
+    return;
+  }
+
+  const reference=suppliedRef || ("FSL-"+Date.now().toString(36).toUpperCase());
+  const outcome=scenario==="success"?"SUCCESS":
+    scenario==="timeout"?"UNKNOWN":"FAILED";
+
+  const tx={
+    time:timeNow(),
+    timestamp:new Date().toISOString(),
+    reference,
+    beneficiary,
+    amount,
+    rail,
+    scenario,
+    outcome
+  };
+
+  transactions.unshift(tx);
+  latestTransaction=tx;
+  addAudit(`Payment instruction created: ${reference}`);
+  addAudit(`Rail selected: ${rail}`);
+  addAudit(`Simulated outcome recorded: ${outcome}`);
+  renderLatest(tx);
+  renderLedger();
+  toast("Simulation complete. No real payment was made.");
+});
+
+document.getElementById("clear-ledger").addEventListener("click",()=>{
+  if(!transactions.length && !auditEvents.length){
+    toast("The session ledger is already empty.");
+    return;
+  }
+  transactions.length=0;
+  auditEvents.length=0;
+  latestTransaction=null;
+  document.getElementById("transaction-status").className="status";
+  document.getElementById("transaction-status").textContent="Awaiting input";
+  document.getElementById("lifecycle-subtitle").textContent="Your latest simulated payment will appear here.";
+  document.getElementById("lifecycle").innerHTML='<div class="empty">Run a test payment to see the processing stages.</div>';
+  document.getElementById("outcome-note").classList.add("hidden");
+  renderLedger();
+  renderAudit();
+  toast("Session ledger cleared.");
+});
+
+document.getElementById("export-csv").addEventListener("click",()=>{
+  if(!transactions.length){
+    toast("There are no transactions to export.");
+    return;
+  }
+  const rows=[
+    ["Timestamp","Reference","Beneficiary","Rail","Amount INR","Scenario","Outcome"],
+    ...transactions.map(tx=>[tx.timestamp,tx.reference,tx.beneficiary,tx.rail,tx.amount,tx.scenario,tx.outcome])
+  ];
+  const csv=rows.map(row=>row.map(value=>{
+    let safe=String(value);
+    if(/^[=+\-@\t\r]/.test(safe)) safe="'"+safe;
+    return '"'+safe.replace(/"/g,'""')+'"';
+  }).join(",")).join("\r\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const anchor=document.createElement("a");
+  anchor.href=url;
+  anchor.download="fintech-systems-lab-transactions.csv";
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+  toast("CSV export created.");
+});
+
+function calculateCrossBorder(){
+  const origin=document.getElementById("cb-origin").value;
+  const destination=document.getElementById("cb-destination").value;
+  const amount=Number(document.getElementById("cb-amount").value);
+  const fee=Number(document.getElementById("cb-fee").value);
+  const rate=Number(document.getElementById("cb-fx").value);
+
+  if(origin===destination){
+    toast("Choose different sending and receiving countries.");
+    return;
+  }
+  if(!Number.isFinite(amount)||amount<=0||!Number.isFinite(fee)||fee<0||
+     !Number.isFinite(rate)||rate<=0||fee>=amount){
+    toast("Enter a valid amount, fee and exchange rate. The fee must be lower than the amount.");
+    return;
+  }
+
+  const from=currencies[origin];
+  const to=currencies[destination];
+  const received=(amount-fee)*rate;
+
+  document.getElementById("cb-from-label").textContent=from.name;
+  document.getElementById("cb-to-label").textContent=to.name;
+  document.getElementById("cb-sent").textContent=money(amount,from.currency);
+  document.getElementById("cb-fee-result").textContent=money(fee,from.currency);
+  document.getElementById("cb-rate-result").textContent=`1 ${from.currency} = ${rate} ${to.currency}`;
+  document.getElementById("cb-received").textContent=money(received,to.currency);
+}
+
+document.getElementById("cb-calculate").addEventListener("click",calculateCrossBorder);
+
+document.getElementById("cb-origin").addEventListener("change",()=>{
+  const origin=document.getElementById("cb-origin").value;
+  const destination=document.getElementById("cb-destination");
+  if(destination.value===origin){
+    destination.value=Object.keys(currencies).find(code=>code!==origin);
+  }
+  calculateCrossBorder();
+});
+
+document.getElementById("cb-destination").addEventListener("change",calculateCrossBorder);
+
+document.querySelectorAll(".nav-tab").forEach(button=>{
+  button.addEventListener("keydown",event=>{
+    if(event.key==="Enter"||event.key===" "){
+      event.preventDefault();
+      switchTab(button.dataset.tab);
+    }
+  });
+});
+
+renderLedger();
+renderAudit();
+calculateCrossBorder();
 </script>
-
-<section style="max-width:900px;margin:32px auto;padding:24px;background:#f4f8ff;border:1px solid #d8e4f2;border-radius:16px;font-family:Arial,sans-serif;">
-  <p style="margin:0 0 8px;color:#4263a5;font-size:12px;font-weight:700;letter-spacing:1px;">EXPLORE ANOTHER PAYMENT SYSTEM</p>
-  <h2 style="margin:0 0 10px;color:#172b4d;">Cross-Border Payments</h2>
-  <p style="margin:0 0 18px;color:#526174;line-height:1.7;">
-    Follow an international payment from the sender through currency conversion, payment processing and the recipient's account. Explore how fees, delays and compliance checks can affect the outcome.
-  </p>
-  <a href="cross-border.html" style="display:inline-block;padding:12px 18px;background:#2457c5;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">
-    Explore the simulation →
-  </a>
-</section>
-  
-<style>
-.fsl-gateway {
-  --fsl-ink: #152b49;
-  --fsl-blue: #2858c7;
-  --fsl-teal: #149b91;
-  max-width: 1160px;
-  margin: 0 auto;
-  padding: 36px 22px 24px;
-  color: var(--fsl-ink);
-  font-family: inherit;
-}
-.fsl-hero {
-  position: relative;
-  overflow: hidden;
-  min-height: 390px;
-  display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  align-items: center;
-  gap: 24px;
-  padding: clamp(24px,5vw,58px);
-  border: 1px solid #dce7f4;
-  border-radius: 26px;
-  background:
-    radial-gradient(ellipse at 85% 18%,rgba(102,165,255,.18),transparent 48%),
-    radial-gradient(ellipse at 90% 90%,rgba(20,155,145,.12),transparent 42%),
-    linear-gradient(135deg,#fff 0%,#f3f7ff 100%);
-}
-.fsl-eyebrow {
-  color: var(--fsl-blue);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2px;
-}
-.fsl-hero h1 {
-  margin: 16px 0;
-  font-size: clamp(36px,5.1vw,61px);
-  line-height: 1.06;
-  letter-spacing: -2px;
-  max-width: 590px;
-}
-.fsl-hero-copy {
-  color: #596b83;
-  max-width: 490px;
-  font-size: 16px;
-  line-height: 1.8;
-}
-.fsl-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 11px;
-  margin-top: 25px;
-}
-.fsl-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 13px 17px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 750;
-  text-decoration: none !important;
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.fsl-button:hover { transform: translateY(-2px); }
-.fsl-primary {
-  color: white !important;
-  background: var(--fsl-blue);
-  box-shadow: 0 7px 20px #2858c728;
-}
-.fsl-secondary {
-  color: var(--fsl-ink) !important;
-  border: 1px solid #d5e0ee;
-  background: rgba(255,255,255,.8);
-}
-.fsl-visual {
-  position: relative;
-  min-width: 0;
-  width: 100%;
-}
-.fsl-visual svg { display:block;width:100%;height:auto;overflow:visible; }
-.fsl-path {
-  fill:none;
-  stroke:#91b5ec;
-  stroke-width:2;
-  stroke-dasharray:7 9;
-  animation:fsl-flow 2.6s linear infinite;
-}
-.fsl-path-teal {
-  fill:none;
-  stroke:#75c9bd;
-  stroke-width:2;
-  stroke-dasharray:5 10;
-  animation:fsl-flow 2s linear infinite;
-}
-.fsl-particle {
-  filter: drop-shadow(0 0 5px #5295ff);
-}
-.fsl-node {
-  fill:#fff;
-  stroke:#d3e1f3;
-  stroke-width:1.5;
-}
-.fsl-node-blue { fill:#eaf1ff;stroke:#a8c3f3; }
-.fsl-node-teal { fill:#e5f7f2;stroke:#8cd2c5; }
-.fsl-visual-label {
-  font:600 11px Arial,sans-serif;
-  fill:#304967;
-}
-.fsl-visual-small {
-  font:10px Arial,sans-serif;
-  fill:#70819a;
-}
-@keyframes fsl-flow {
-  to { stroke-dashoffset:-64; }
-}
-.fsl-section-heading {
-  margin:30px 0 15px;
-}
-.fsl-section-heading h2 {
-  font-size:24px;
-  letter-spacing:-.5px;
-  margin:0 0 5px;
-}
-.fsl-section-heading p {
-  margin:0;
-  color:#637188;
-  font-size:14px;
-}
-.fsl-cards {
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:16px;
-}
-.fsl-card {
-  position:relative;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  min-width:0;
-  padding:24px;
-  border:1px solid #e0e7f0;
-  border-radius:17px;
-  background:#fff;
-  transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
-}
-.fsl-card:hover {
-  transform:translateY(-3px);
-  border-color:#b7caed;
-  box-shadow:0 12px 30px #1b37640d;
-}
-.fsl-card-icon {
-  display:grid;
-  place-items:center;
-  width:44px;
-  height:44px;
-  border-radius:13px;
-  background:#edf3ff;
-  color:#2858c7;
-  font-size:22px;
-  margin-bottom:17px;
-}
-.fsl-card h3 { margin:0 0 8px;font-size:19px; }
-.fsl-card p {
-  color:#637188;
-  font-size:14px;
-  line-height:1.75;
-  margin:0 0 18px;
-}
-.fsl-card a {
-  margin-top:auto;
-  color:#2858c7;
-  font-weight:750;
-  font-size:13px;
-  text-decoration:none;
-}
-.fsl-footnote {
-  margin-top:18px;
-  color:#758197;
-  font-size:12px;
-  line-height:1.7;
-}
-@media(max-width:720px) {
-  .fsl-gateway { padding:22px 14px; }
-  .fsl-hero { grid-template-columns:1fr;gap:12px;padding:28px 21px; }
-  .fsl-hero h1 { letter-spacing:-1.3px; }
-  .fsl-visual { max-width:430px;margin:0 auto; }
-  .fsl-cards { grid-template-columns:1fr; }
-}
-@media(prefers-reduced-motion:reduce) {
-  .fsl-path,.fsl-path-teal { animation:none; }
-  .fsl-card,.fsl-button { transition:none; }
-  .fsl-card:hover,.fsl-button:hover { transform:none; }
-}
-</style>
-
-<section class="fsl-gateway" aria-label="FinTech Systems Lab introduction">
-  <div class="fsl-hero">
-    <div>
-      <div class="fsl-eyebrow">EXPLORE THE SYSTEMS BEHIND MONEY</div>
-      <h1>Money moves.<br>Systems make it happen.</h1>
-      <p class="fsl-hero-copy">
-        What happens after you press Pay? Discover the networks,
-        institutions, checks and processes that make financial
-        transactions possible. Explore each step through interactive
-        simulations, without needing a finance background.
-      </p>
-      <div class="fsl-actions">
-        <a class="fsl-button fsl-primary" href="#fsl-explore">Explore the Lab ↓</a>
-        <a class="fsl-button fsl-secondary" href="cross-border.html">Cross-Border Payments ↗</a>
-      </div>
-    </div>
-
-    <div class="fsl-visual" aria-label="Illustration of a transaction travelling between connected financial systems">
-      <svg viewBox="0 0 420 340" role="img" aria-labelledby="fsl-svg-title">
-        <title id="fsl-svg-title">A payment travels between a sender, financial network and recipient</title>
-        <defs>
-          <linearGradient id="fsl-line" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#6799f0"/>
-            <stop offset="100%" stop-color="#42b7a5"/>
-          </linearGradient>
-          <filter id="fsl-glow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-        <circle cx="210" cy="166" r="126" fill="#eaf2ff" opacity=".48"/>
-        <circle cx="210" cy="166" r="91" fill="none" stroke="#dbe7f7" stroke-dasharray="3 7"/>
-        <path class="fsl-path" d="M80 90 C135 90 140 145 185 145 S275 70 340 90"/>
-        <path class="fsl-path-teal" d="M80 250 C140 250 145 188 205 188 S280 245 340 245"/>
-        <path d="M80 90 C135 90 140 145 185 145 S275 70 340 90" fill="none" stroke="url(#fsl-line)" stroke-width="2.5" opacity=".5"/>
-        <circle class="fsl-particle" r="5" fill="#3977e8" filter="url(#fsl-glow)">
-          <animateMotion dur="3.4s" repeatCount="indefinite" path="M80 90 C135 90 140 145 185 145 S275 70 340 90"/>
-        </circle>
-        <circle class="fsl-particle" r="4" fill="#18a18f">
-          <animateMotion dur="4s" repeatCount="indefinite" path="M340 245 C280 245 265 188 205 188 S140 250 80 250"/>
-        </circle>
-        <rect class="fsl-node" x="12" y="58" width="106" height="64" rx="12"/>
-        <circle cx="31" cy="80" r="5" fill="#3977e8"/>
-        <text class="fsl-visual-label" x="24" y="99">Sender</text>
-        <text class="fsl-visual-small" x="24" y="112">Starts payment</text>
-        <rect class="fsl-node fsl-node-blue" x="154" y="123" width="112" height="66" rx="13"/>
-        <text class="fsl-visual-label" x="210" y="148" text-anchor="middle">Payment</text>
-        <text class="fsl-visual-label" x="210" y="162" text-anchor="middle">network</text>
-        <text class="fsl-visual-small" x="210" y="177" text-anchor="middle">Checks · Routing</text>
-        <rect class="fsl-node fsl-node-teal" x="302" y="58" width="106" height="64" rx="12"/>
-        <circle cx="321" cy="80" r="5" fill="#18a18f"/>
-        <text class="fsl-visual-label" x="314" y="99">Recipient</text>
-        <text class="fsl-visual-small" x="314" y="112">Receives funds</text>
-        <rect x="12" y="220" width="106" height="58" rx="12" fill="#fff" stroke="#dce7f4"/>
-        <text class="fsl-visual-label" x="24" y="242">Validation</text>
-        <text class="fsl-visual-small" x="24" y="257">Is it permitted?</text>
-        <rect x="302" y="215" width="106" height="68" rx="12" fill="#fff" stroke="#dce7f4"/>
-        <text class="fsl-visual-label" x="314" y="238">Confirmation</text>
-        <text class="fsl-visual-small" x="314" y="253">Check status</text>
-        <text class="fsl-visual-small" x="210" y="319" text-anchor="middle">A simplified learning illustration</text>
-      </svg>
-    </div>
-  </div>
-
-  <div id="fsl-explore" class="fsl-section-heading">
-    <h2>Choose a journey</h2>
-    <p>Start with a familiar payment, then explore how money moves across borders.</p>
-  </div>
-
-  <div class="fsl-cards">
-    <article class="fsl-card">
-      <div class="fsl-card-icon" aria-hidden="true">↗</div>
-      <h3>Domestic Payments</h3>
-      <p>Explore your existing payment simulator and discover how payment instructions, bank checks, processing and transaction outcomes fit together.</p>
-      <a href="#fsl-domestic" onclick="event.preventDefault(); const target=document.querySelector('form')||document.querySelector('input,select,button'); if(target) target.scrollIntoView({behavior:'smooth',block:'center'}); else window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});">Explore the existing simulator →</a>
-    </article>
-
-    <article class="fsl-card">
-      <div class="fsl-card-icon" aria-hidden="true">⇄</div>
-      <h3>Cross-Border Payments</h3>
-      <p>Follow an international payment through currency conversion, fees, compliance checks, routing and recipient credit.</p>
-      <a href="cross-border.html">Explore the cross-border journey →</a>
-    </article>
-  </div>
-
-  <p class="fsl-footnote">
-    FinTech Systems Lab is an independent financial education project by
-    G Hari Charan, Design &amp; Curator. Simulations are illustrative and
-    do not initiate real transactions.
-  </p>
-</section>
-
-
 </body>
-  
 </html>
