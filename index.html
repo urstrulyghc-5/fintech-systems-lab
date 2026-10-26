@@ -1,96 +1,1245 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101827">
-  <meta name="description" content="An educational fintech payment-processing simulation with transaction lifecycle, failure handling and reconciliation.">
-  <title>FinTech Systems Lab | Payment Processing</title>
-  <link rel="stylesheet" href="styles.css">
-  <script type="module" src="app.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinTech Systems Lab | Payment Processing</title>
+<meta name="description" content="An interactive educational simulation showing how fintech payment processing, transaction controls, failures and reconciliation work.">
+
+<style>
+:root {
+  --navy: #173653;
+  --blue: #2469a6;
+  --blue-light: #eaf3fb;
+  --ink: #243447;
+  --muted: #69798b;
+  --line: #dce4ec;
+  --background: #f4f7fa;
+  --white: #ffffff;
+  --green: #18764b;
+  --green-bg: #e8f5ed;
+  --amber: #956300;
+  --amber-bg: #fff4d6;
+  --red: #b52d31;
+  --red-bg: #fdeced;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--ink);
+  font: 14px/1.55 -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Arial, sans-serif;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar-inner {
+  max-width: 1440px;
+  margin: auto;
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: white;
+  border-radius: 5px;
+  font-weight: 800;
+}
+
+.brand h1 {
+  font-size: 16px;
+  margin: 0;
+  color: var(--navy);
+}
+
+.brand p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.environment {
+  font-size: 11px;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid #ead7a2;
+  border-radius: 4px;
+  padding: 6px 9px;
+  font-weight: 700;
+}
+
+.container {
+  max-width: 1440px;
+  padding: 28px;
+  margin: auto;
+}
+
+.intro {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+}
+
+h2 {
+  color: var(--navy);
+  font-size: clamp(25px, 3vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -.7px;
+  margin: 7px 0 10px;
+}
+
+.intro p {
+  max-width: 790px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.notice {
+  margin: 0 0 23px;
+  background: var(--blue-light);
+  border: 1px solid #cbdfee;
+  border-left: 4px solid var(--blue);
+  border-radius: 4px;
+  padding: 13px 15px;
+  color: #35526d;
+  font-size: 12px;
+}
+
+.notice strong { color: var(--navy); }
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.metric, .panel {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+
+.metric { padding: 17px; }
+
+.metric-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric-value {
+  font-size: 26px;
+  font-weight: 750;
+  color: var(--navy);
+  margin: 7px 0 5px;
+  overflow-wrap: anywhere;
+}
+
+.metric-note {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(290px, 365px) minmax(0, 1fr);
+  gap: 19px;
+  align-items: start;
+}
+
+.panel { overflow: hidden; }
+
+.panel-heading {
+  padding: 17px 19px;
+  border-bottom: 1px solid var(--line);
+}
+
+.panel-heading h3 {
+  margin: 0;
+  font-size: 15px;
+  color: var(--navy);
+}
+
+.panel-heading p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+.panel-content { padding: 19px; }
+
+.field { margin-bottom: 15px; }
+
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.field input, .field select {
+  display: block;
+  width: 100%;
+  min-height: 41px;
+  padding: 9px 10px;
+  background: white;
+  border: 1px solid #cbd5df;
+  border-radius: 4px;
+  color: var(--ink);
+}
+
+.field input:focus, .field select:focus {
+  outline: 2px solid #c3def5;
+  border-color: var(--blue);
+}
+
+.help {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.button {
+  border: 1px solid #cbd5df;
+  border-radius: 4px;
+  background: white;
+  color: var(--ink);
+  font-weight: 650;
+  padding: 9px 12px;
+}
+
+.button-primary {
+  width: 100%;
+  background: var(--blue);
+  color: white;
+  border-color: var(--blue);
+  padding: 12px;
+}
+
+.button-primary:hover { background: #1b5689; }
+
+.button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.result {
+  display: none;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 12px;
+}
+
+.result.visible { display: block; }
+.result strong { display: block; margin-bottom: 4px; }
+.result.success { background: var(--green-bg); color: var(--green); }
+.result.failure { background: var(--red-bg); color: var(--red); }
+.result.pending { background: var(--amber-bg); color: #755300; }
+
+.disclaimer {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.right-column {
+  display: grid;
+  gap: 19px;
+  min-width: 0;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stages {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stage {
+  background: #f7f9fb;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px 9px;
+  min-width: 0;
+}
+
+.stage-number {
+  display: inline-grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  background: #e2eaf1;
+  color: #405b73;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.stage strong {
+  display: block;
+  font-size: 11px;
+  color: var(--navy);
+}
+
+.stage small {
+  display: block;
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.stage.done {
+  background: var(--green-bg);
+  border-color: #b7ddc7;
+}
+
+.stage.done .stage-number {
+  background: var(--green);
+  color: white;
+}
+
+.stage.failed {
+  background: var(--red-bg);
+  border-color: #efc0c2;
+}
+
+.stage.failed .stage-number {
+  background: var(--red);
+  color: white;
+}
+
+.stage.current {
+  border-color: #8eb6d9;
+  background: var(--blue-light);
+}
+
+.table-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 17px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.table-tools input {
+  max-width: 260px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #cbd5df;
+  border-radius: 4px;
+}
+
+.table-wrap { overflow-x: auto; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  white-space: nowrap;
+}
+
+th {
+  background: #f7f9fb;
+  color: #647589;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+}
+
+th, td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e9eef3;
+}
+
+td { font-size: 12px; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: #fafcff; }
+
+.empty {
+  text-align: center;
+  padding: 27px 15px;
+  color: var(--muted);
+  white-space: normal;
+}
+
+.status {
+  display: inline-block;
+  padding: 4px 7px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.status-success { color: var(--green); background: var(--green-bg); }
+.status-failed { color: var(--red); background: var(--red-bg); }
+.status-pending { color: var(--amber); background: var(--amber-bg); }
+.status-rejected { color: var(--red); background: var(--red-bg); }
+
+.subtext {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.reference {
+  font-weight: 750;
+  color: var(--blue);
+}
+
+.lower-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 19px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid #e9eef3;
+  font-size: 12px;
+}
+
+.stat-row:last-child { border-bottom: 0; }
+.stat-row span { color: var(--muted); }
+
+.audit-entry {
+  padding: 10px 0;
+  border-bottom: 1px solid #e9eef3;
+  font-size: 12px;
+}
+
+.audit-entry:last-child { border-bottom: 0; }
+.audit-time { font-size: 10px; color: var(--muted); }
+.audit-entry strong { display: block; margin: 3px 0; }
+
+.explain {
+  padding: 18px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-top: 20px;
+}
+
+.explain h3 {
+  color: var(--navy);
+  font-size: 15px;
+  margin: 0 0 7px;
+}
+
+.explain p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 13px;
+}
+
+.concepts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.concept {
+  border-top: 2px solid #8daecc;
+  padding-top: 10px;
+}
+
+.concept strong {
+  color: var(--navy);
+  font-size: 12px;
+}
+
+.concept p {
+  font-size: 11px;
+  margin: 5px 0 0;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 24px;
+}
+
+@media(max-width: 1000px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media(max-width: 650px) {
+  .container { padding: 19px 13px; }
+  .topbar-inner { padding: 13px; }
+  .intro { display: block; }
+  .environment { display: inline-block; margin-top: 13px; }
+  .metrics { gap: 9px; }
+  .metric { padding: 12px; }
+  .metric-value { font-size: 22px; }
+  .stages { grid-template-columns: 1fr; }
+  .stage { display: grid; grid-template-columns: 27px 1fr; column-gap: 8px; }
+  .stage-number { grid-row: span 2; }
+  .stage strong { align-self: end; }
+  .stage small { margin-top: 2px; }
+  .lower-grid, .concepts { grid-template-columns: 1fr; }
+  .brand p { max-width: 220px; }
+}
+</style>
 </head>
+
 <body>
-  <header class="topbar">
-    <a class="brand" href="#top" aria-label="FinTech Systems Lab home"><span class="brand-mark">F</span><span>FinTech <strong>Systems Lab</strong></span></a>
-    <div class="top-meta"><span class="live-dot"></span> LOCAL SIMULATION <span class="version">v1.0</span></div>
-  </header>
 
-  <main id="top" class="shell">
-    <section class="hero">
-      <div class="eyebrow">PAYMENT INFRASTRUCTURE · INTERACTIVE MODEL</div>
-      <h1>See what happens <span>behind a payment.</span></h1>
-      <p class="hero-copy">Follow a transaction from initiation to a final state. Inspect validation, authorisation decisions, ledger entries and reconciliation, including what happens when a transaction fails.</p>
-      <div class="notice"><strong>Simulation, not a live payment service.</strong> All transactions and counterparties are fictional. No money moves and no bank, card network or payment provider is connected.</div>
-    </section>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">FS</div>
+      <div>
+        <h1>FinTech Systems Lab</h1>
+        <p>Payment operations and transaction controls</p>
+      </div>
+    </div>
+    <div class="environment">SIMULATION ONLY</div>
+  </div>
+</header>
 
-    <section class="metric-grid" aria-label="System summary">
-      <article class="metric"><span class="metric-label">Transactions</span><strong id="metric-total">0</strong><span class="metric-foot">In this session</span></article>
-      <article class="metric"><span class="metric-label">Successful</span><strong id="metric-success">0</strong><span class="metric-foot">Simulated approvals</span></article>
-      <article class="metric"><span class="metric-label">Needs attention</span><strong id="metric-attention">0</strong><span class="metric-foot">Failed or pending</span></article>
-      <article class="metric"><span class="metric-label">Reconciliation</span><strong id="metric-recon">Not run</strong><span class="metric-foot">Internal record check</span></article>
-    </section>
+<main class="container">
 
-    <section class="layout-grid">
-      <section class="panel create-panel" aria-labelledby="create-title">
-        <div class="panel-heading"><div><div class="section-kicker">01 / INITIATE</div><h2 id="create-title">Create a payment</h2></div><span class="step-number">01</span></div>
-        <p class="panel-intro">Submit a fictional merchant payment. Choose a scenario to inspect how the system handles different outcomes.</p>
+  <section class="intro">
+    <div>
+      <div class="eyebrow">Interactive financial systems laboratory</div>
+      <h2>What happens after you make a payment?</h2>
+      <p>
+        A digital payment is more than a tap on a screen. Behind it are
+        validation rules, payment instructions, risk controls, processing
+        outcomes and records that must agree. Explore those mechanisms
+        through this interactive simulation.
+      </p>
+    </div>
+  </section>
+
+  <div class="notice">
+    <strong>Learning objective:</strong>
+    Follow a payment from submission to its recorded outcome. Test what
+    happens when a payment succeeds, is declined, times out or is blocked
+    by a control. All transactions here are simulated; no money moves.
+  </div>
+
+  <section class="metrics">
+    <div class="metric">
+      <div class="metric-label">Submitted transactions</div>
+      <div class="metric-value" id="total-count">0</div>
+      <div class="metric-note">Current session</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Successful payment value</div>
+      <div class="metric-value" id="total-value">₹0.00</div>
+      <div class="metric-note">Successful records only</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Success rate</div>
+      <div class="metric-value" id="success-rate">—</div>
+      <div class="metric-note">Among final outcomes</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Failed or rejected</div>
+      <div class="metric-value" id="review-count">0</div>
+      <div class="metric-note">Requires a different outcome or review</div>
+    </div>
+  </section>
+
+  <div class="main-grid">
+
+    <section class="panel">
+      <div class="panel-heading">
+        <h3>01 · Submit a payment</h3>
+        <p>Enter a payment instruction and choose a test scenario.</p>
+      </div>
+
+      <div class="panel-content">
         <form id="payment-form">
-          <label for="merchant">Merchant reference</label>
-          <input id="merchant" name="merchant" maxlength="60" value="Northstar Books" required autocomplete="off">
-          <div class="form-row">
-            <div><label for="amount">Amount (INR)</label><input id="amount" name="amount" type="number" min="1" max="1000000" step="0.01" value="1250.00" required></div>
-            <div><label for="method">Payment rail (simulated)</label><select id="method" name="method"><option value="UPI">UPI</option><option value="CARD">Card</option><option value="BANK_TRANSFER">Bank transfer</option><option value="WALLET">Wallet</option></select></div>
+          <div class="field">
+            <label for="merchant">Merchant / beneficiary</label>
+            <input id="merchant" maxlength="70"
+                   placeholder="e.g. Northstar Retail" required>
           </div>
-          <label for="scenario">Test scenario</label>
-          <select id="scenario" name="scenario"><option value="success">Successful payment</option><option value="declined">Authorisation declined</option><option value="timeout">Processor timeout</option><option value="invalid">Validation failure</option></select>
-          <button class="primary-button" type="submit">Run payment simulation <span aria-hidden="true">→</span></button>
-          <p id="form-message" class="form-message" role="status" aria-live="polite">Ready to process a simulated transaction.</p>
+
+          <div class="field">
+            <label for="amount">Amount (INR)</label>
+            <input id="amount" type="number" min="1" max="500000"
+                   step="0.01" placeholder="2500.00" required>
+            <span class="help">Permitted simulation range: ₹1–₹5,00,000.</span>
+          </div>
+
+          <div class="field">
+            <label for="rail">Payment method</label>
+            <select id="rail">
+              <option>UPI</option>
+              <option>IMPS</option>
+              <option>NEFT</option>
+              <option>Card</option>
+              <option>Wallet</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="reference-input">Client reference</label>
+            <input id="reference-input" maxlength="40"
+                   placeholder="e.g. ORDER-10482" required>
+            <span class="help">
+              Each reference may be used only once in this session.
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="scenario">Test scenario</label>
+            <select id="scenario">
+              <option value="success">Successful processing</option>
+              <option value="decline">Bank / issuer decline</option>
+              <option value="timeout">Processing timeout</option>
+              <option value="risk">Risk control rejection</option>
+            </select>
+            <span class="help">
+              This selector simulates the outcome so you can compare
+              the system's response.
+            </span>
+          </div>
+
+          <button class="button button-primary" id="submit-button"
+                  type="submit">Process simulated payment</button>
         </form>
-        <div class="mini-explainer"><strong>What this tests</strong><p>Input validation → transaction creation → simulated decision → state update → ledger recording.</p></div>
-      </section>
 
-      <section class="panel lifecycle-panel" aria-labelledby="lifecycle-title">
-        <div class="panel-heading"><div><div class="section-kicker">02 / TRACE</div><h2 id="lifecycle-title">Payment lifecycle</h2></div><span class="step-number">02</span></div>
-        <p class="panel-intro">Select a transaction in the table to inspect its event trail.</p>
-        <div class="lifecycle" id="lifecycle" aria-label="Transaction lifecycle">
-          <div class="life-step current" data-stage="initiated"><span class="life-icon">1</span><div><strong>Initiated</strong><small>Request received</small></div></div>
-          <div class="life-line"></div>
-          <div class="life-step" data-stage="validated"><span class="life-icon">2</span><div><strong>Validated</strong><small>Fields and amount checked</small></div></div>
-          <div class="life-line"></div>
-          <div class="life-step" data-stage="authorised"><span class="life-icon">3</span><div><strong>Decision</strong><small>Simulated authorisation</small></div></div>
-          <div class="life-line"></div>
-          <div class="life-step" data-stage="recorded"><span class="life-icon">4</span><div><strong>Recorded</strong><small>Internal ledger entry</small></div></div>
+        <div class="result" id="result" role="status"
+             aria-live="polite"></div>
+
+        <div class="disclaimer">
+          <strong>Important:</strong> This is an educational prototype.
+          It is not connected to a bank, payment gateway, card network
+          or live UPI service.
         </div>
-        <div class="trace-box"><div class="trace-header"><strong id="trace-title">Event trail</strong><span id="trace-status" class="status-chip neutral">No transaction selected</span></div><ol id="event-list" class="event-list"><li class="empty-state">Run a simulation to see its event trail here.</li></ol></div>
-      </section>
+      </div>
     </section>
 
-    <section class="panel transactions-panel" aria-labelledby="transactions-title">
-      <div class="panel-heading table-heading"><div><div class="section-kicker">03 / OBSERVE</div><h2 id="transactions-title">Transaction register</h2></div><div class="table-actions"><select id="filter-status" aria-label="Filter by transaction status"><option value="ALL">All statuses</option><option value="SUCCESS">Successful</option><option value="DECLINED">Declined</option><option value="PENDING_REVIEW">Pending review</option><option value="VALIDATION_FAILED">Validation failed</option></select><button id="seed-button" class="secondary-button" type="button">Load example cases</button></div></div>
-      <div class="table-wrap"><table><thead><tr><th>Transaction ID</th><th>Merchant</th><th>Amount</th><th>Rail</th><th>Status</th><th>Time</th><th>Action</th></tr></thead><tbody id="transaction-rows"><tr><td colspan="7" class="empty-table">No transactions yet. Run a payment simulation or load example cases.</td></tr></tbody></table></div>
-      <p class="table-note">IDs are generated locally. Selecting a row loads its lifecycle and event trail.</p>
-    </section>
+    <div class="right-column">
 
-    <section class="bottom-grid">
-      <section class="panel reconciliation-panel" aria-labelledby="recon-title">
-        <div class="panel-heading"><div><div class="section-kicker">04 / VERIFY</div><h2 id="recon-title">Reconciliation check</h2></div><span class="step-number">04</span></div>
-        <p class="panel-intro">Compare successful internal ledger entries with the simulated settlement report. This checks the sample records, not a real bank statement.</p>
-        <button id="reconcile-button" class="primary-button" type="button">Run reconciliation <span aria-hidden="true">→</span></button>
-        <div id="recon-results" class="recon-results" aria-live="polite"><div class="empty-state">Run a reconciliation after creating transactions.</div></div>
+      <section class="panel">
+        <div class="panel-heading">
+          <h3>02 · Payment processing lifecycle</h3>
+          <p>Follow the stages that a payment system must manage.</p>
+        </div>
+        <div class="panel-content">
+          <div class="stages" id="stages">
+            <div class="stage" data-stage="0">
+              <span class="stage-number">1</span>
+              <strong>Instruction</strong>
+              <small>Payment details received</small>
+            </div>
+            <div class="stage" data-stage="1">
+              <span class="stage-number">2</span>
+              <strong>Validation</strong>
+              <small>Fields and amount checked</small>
+            </div>
+            <div class="stage" data-stage="2">
+              <span class="stage-number">3</span>
+              <strong>Controls</strong>
+              <small>Duplicate reference checked</small>
+            </div>
+            <div class="stage" data-stage="3">
+              <span class="stage-number">4</span>
+              <strong>Processing</strong>
+              <small>Simulated outcome determined</small>
+            </div>
+            <div class="stage" data-stage="4">
+              <span class="stage-number">5</span>
+              <strong>Ledger</strong>
+              <small>Outcome recorded for review</small>
+            </div>
+          </div>
+          <div class="result visible pending" id="lifecycle-note">
+            <strong>Ready for a transaction</strong>
+            Submit a payment to see the lifecycle update.
+          </div>
+        </div>
       </section>
-      <section class="panel integrity-panel" aria-labelledby="integrity-title">
-        <div class="panel-heading"><div><div class="section-kicker">05 / UNDERSTAND</div><h2 id="integrity-title">System integrity</h2></div><span class="step-number">05</span></div>
-        <ul class="integrity-list">
-          <li><span class="check">✓</span><div><strong>Duplicate request guard</strong><p>Repeated request keys are rejected instead of creating a second transaction.</p></div></li>
-          <li><span class="check">✓</span><div><strong>Explicit transaction states</strong><p>Success, decline, validation failure and uncertain processor outcomes are kept distinct.</p></div></li>
-          <li><span class="check">✓</span><div><strong>Auditable event trail</strong><p>Each simulated step records an event and timestamp.</p></div></li>
-          <li><span class="check">✓</span><div><strong>Reconciliation</strong><p>Internal records are compared with a separate simulated settlement dataset.</p></div></li>
-        </ul>
-      </section>
-    </section>
 
-    <section class="method-note"><strong>Scope and limitations</strong><p>This educational model demonstrates application-level payment logic. Real payment systems also depend on regulated participants, network protocols, authentication, fraud controls, settlement arrangements, security operations and provider-specific rules. The simulation does not claim to reproduce any particular provider's production implementation.</p></section>
-    <footer><span>FINTECH SYSTEMS LAB</span><span>Educational prototype · Fictional data · No live financial connections</span></footer>
-  </main>
+      <section class="panel">
+        <div class="panel-heading section-heading">
+          <div>
+            <h3>03 · Transaction ledger</h3>
+            <p>A record of the simulated payment attempts and outcomes.</p>
+          </div>
+          <button class="button" id="export-button" type="button">
+            Export CSV
+          </button>
+        </div>
+
+        <div class="table-tools">
+          <strong style="font-size:12px">Session transactions</strong>
+          <input id="search" type="search"
+                 placeholder="Search reference or merchant"
+                 aria-label="Search transactions">
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Transaction ID</th>
+                <th>Reference</th>
+                <th>Merchant</th>
+                <th>Amount</th>
+                <th>Rail</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-body">
+              <tr>
+                <td colspan="6" class="empty">
+                  No records yet. Submit a simulated payment to begin.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="lower-grid">
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h3>04 · Reconciliation</h3>
+            <p>Compare recorded transactions by outcome.</p>
+          </div>
+          <div class="panel-content">
+            <div class="stat-row">
+              <span>Successful transactions</span>
+              <strong id="rec-success">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Successful value</span>
+              <strong id="rec-value">₹0.00</strong>
+            </div>
+            <div class="stat-row">
+              <span>Failed transactions</span>
+              <strong id="rec-failed">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Rejected transactions</span>
+              <strong id="rec-rejected">0</strong>
+            </div>
+            <div class="stat-row">
+              <span>Pending / unknown outcome</span>
+              <strong id="rec-pending">0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading">
+            <h3>05 · Control audit trail</h3>
+            <p>Recent events generated by the simulation.</p>
+          </div>
+          <div class="panel-content" id="audit">
+            <div class="audit-entry">
+              <span class="audit-time">Initialised</span>
+              <strong>Simulation ready</strong>
+              <div class="subtext">
+                No real payment network is connected.
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <section class="explain">
+    <h3>What this simulation demonstrates</h3>
+    <p>
+      These are separate responsibilities within a payment-processing
+      workflow. Real implementations vary by payment method, provider
+      and financial institution.
+    </p>
+    <div class="concepts">
+      <div class="concept">
+        <strong>Validation and duplicate prevention</strong>
+        <p>
+          Invalid amounts should be stopped early. Repeated client
+          references are blocked here to demonstrate duplicate protection.
+          Production systems need stronger, persistent idempotency controls.
+        </p>
+      </div>
+      <div class="concept">
+        <strong>Failures and uncertain outcomes</strong>
+        <p>
+          A decline is not the same as a timeout. When a timeout occurs,
+          the final outcome may be unknown. A real system checks transaction
+          status before attempting a retry.
+        </p>
+      </div>
+      <div class="concept">
+        <strong>Ledger and reconciliation</strong>
+        <p>
+          Payment activity must be recorded and compared with authoritative
+          payment-provider or bank records. This prototype summarises its own
+          simulated records; it does not reconcile against a real bank.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span><strong>FinTech Systems Lab</strong> · Educational prototype</span>
+    <span>Session data is held in browser memory and resets on refresh.</span>
+  </footer>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const transactions = [];
+  const auditEvents = [];
+  let nextId = 1;
+  let processing = false;
+
+  const money = value =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+
+  const timestamp = () =>
+    new Date().toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[character]);
+  }
+
+  function logEvent(title, detail) {
+    auditEvents.unshift({
+      time: timestamp(),
+      title,
+      detail
+    });
+    auditEvents.splice(8);
+    renderAudit();
+  }
+
+  function showResult(type, title, message) {
+    const result = $("result");
+    result.className = "result visible " + type;
+    result.replaceChildren();
+
+    const heading = document.createElement("strong");
+    heading.textContent = title;
+    result.append(heading, document.createTextNode(message));
+  }
+
+  function updateLifecycle(currentStage, outcome) {
+    document.querySelectorAll(".stage").forEach((element, index) => {
+      element.classList.remove("done", "failed", "current");
+
+      if (index < currentStage) {
+        element.classList.add("done");
+      } else if (index === currentStage) {
+        element.classList.add(outcome === "failed" ? "failed" : "current");
+      }
+    });
+
+    const note = $("lifecycle-note");
+
+    if (outcome === "ready") {
+      note.className = "result visible pending";
+      note.innerHTML =
+        "<strong>Ready for a transaction</strong>" +
+        "Submit a payment to see the lifecycle update.";
+    } else if (outcome === "success") {
+      note.className = "result visible success";
+      note.innerHTML =
+        "<strong>Processing completed</strong>" +
+        "The simulated payment reached a successful outcome and was recorded.";
+    } else if (outcome === "unknown") {
+      note.className = "result visible pending";
+      note.innerHTML =
+        "<strong>Outcome remains unknown</strong>" +
+        "The transaction is pending. A real system must check its status before retrying.";
+    } else {
+      note.className = "result visible failure";
+      note.innerHTML =
+        "<strong>Processing did not complete successfully</strong>" +
+        "Review the recorded outcome and reason in the transaction ledger.";
+    }
+  }
+
+  function getTotals() {
+    const success = transactions.filter(t => t.status === "Success");
+    const failed = transactions.filter(t => t.status === "Failed");
+    const rejected = transactions.filter(t => t.status === "Rejected");
+    const pending = transactions.filter(t => t.status === "Pending");
+    const finalCount = success.length + failed.length + rejected.length;
+    const successValue = success.reduce((sum, t) => sum + t.amount, 0);
+
+    return {
+      success, failed, rejected, pending, finalCount, successValue
+    };
+  }
+
+  function renderMetrics() {
+    const totals = getTotals();
+
+    $("total-count").textContent = transactions.length;
+    $("total-value").textContent = money(totals.successValue);
+    $("success-rate").textContent = totals.finalCount
+      ? Math.round(totals.success.length / totals.finalCount * 100) + "%"
+      : "—";
+    $("review-count").textContent =
+      totals.failed.length + totals.rejected.length;
+
+    $("rec-success").textContent = totals.success.length;
+    $("rec-value").textContent = money(totals.successValue);
+    $("rec-failed").textContent = totals.failed.length;
+    $("rec-rejected").textContent = totals.rejected.length;
+    $("rec-pending").textContent = totals.pending.length;
+  }
+
+  function renderLedger() {
+    const query = $("search").value.trim().toLowerCase();
+
+    const filtered = transactions.filter(t =>
+      (t.id + " " + t.reference + " " + t.merchant + " " + t.status)
+        .toLowerCase().includes(query)
+    );
+
+    const body = $("ledger-body");
+    body.replaceChildren();
+
+    if (!filtered.length) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 6;
+      cell.className = "empty";
+      cell.textContent = transactions.length
+        ? "No matching transactions."
+        : "No records yet. Submit a simulated payment to begin.";
+      row.append(cell);
+      body.append(row);
+      return;
+    }
+
+    filtered.forEach(t => {
+      const row = document.createElement("tr");
+
+      const values = [
+        t.id, t.reference, t.merchant, money(t.amount), t.rail
+      ];
+
+      values.forEach((value, index) => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+
+        if (index === 0) cell.className = "reference";
+        if (index === 3) cell.style.fontVariantNumeric = "tabular-nums";
+
+        row.append(cell);
+      });
+
+      const statusCell = document.createElement("td");
+      const badge = document.createElement("span");
+      badge.className = "status status-" + t.status.toLowerCase();
+      badge.textContent = t.status;
+      statusCell.append(badge);
+
+      if (t.reason) {
+        const reason = document.createElement("div");
+        reason.className = "subtext";
+        reason.textContent = t.reason;
+        statusCell.append(reason);
+      }
+
+      row.append(statusCell);
+      body.append(row);
+    });
+  }
+
+  function renderAudit() {
+    const container = $("audit");
+    container.replaceChildren();
+
+    auditEvents.forEach(event => {
+      const entry = document.createElement("div");
+      entry.className = "audit-entry";
+
+      const time = document.createElement("span");
+      time.className = "audit-time";
+      time.textContent = event.time;
+
+      const title = document.createElement("strong");
+      title.textContent = event.title;
+
+      const detail = document.createElement("div");
+      detail.className = "subtext";
+      detail.textContent = event.detail;
+
+      entry.append(time, title, detail);
+      container.append(entry);
+    });
+  }
+
+  function render() {
+    renderMetrics();
+    renderLedger();
+  }
+
+  function addTransaction(data) {
+    const transaction = {
+      id: "FTL-" + String(nextId++).padStart(6, "0"),
+      createdAt: new Date().toISOString(),
+      status: "Pending",
+      reason: "Awaiting simulated outcome",
+      ...data
+    };
+
+    transactions.unshift(transaction);
+    render();
+    return transaction;
+  }
+
+  $("payment-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    if (processing) return;
+
+    const merchant = $("merchant").value.trim();
+    const amount = Number($("amount").value);
+    const rail = $("rail").value;
+    const reference = $("reference-input").value.trim();
+    const scenario = $("scenario").value;
+
+    if (!merchant || !reference) {
+      showResult("failure", "Validation failed",
+        "Enter both a merchant and a client reference.");
+      return;
+    }
+
+    if (!Number.isFinite(amount) || amount < 1 || amount > 500000) {
+      showResult("failure", "Invalid amount",
+        "Enter an amount between ₹1 and ₹5,00,000.");
+      logEvent("Validation blocked",
+        "The submitted amount was outside the permitted range.");
+      return;
+    }
+
+    const duplicate = transactions.some(t =>
+      t.reference.toLowerCase() === reference.toLowerCase()
+    );
+
+    if (duplicate) {
+      showResult("failure", "Duplicate reference blocked",
+        "This client reference already exists. No second transaction was processed.");
+      logEvent("Duplicate blocked",
+        "Reference " + reference + " already exists.");
+      return;
+    }
+
+    processing = true;
+    $("submit-button").disabled = true;
+    $("submit-button").textContent = "Processing…";
+
+    updateLifecycle(0, "current");
+
+    const transaction = addTransaction({
+      merchant, amount, rail, reference, scenario
+    });
+
+    logEvent("Instruction received",
+      transaction.id + " was submitted to the simulation.");
+
+    updateLifecycle(1, "current");
+
+    window.setTimeout(() => {
+      updateLifecycle(2, "current");
+
+      logEvent("Validation and duplicate checks passed",
+        transaction.id + " passed the client-side controls.");
+
+      window.setTimeout(() => {
+        updateLifecycle(3, "current");
+
+        logEvent("Processing scenario selected",
+          "The selected outcome is: " + scenario + ".");
+
+        window.setTimeout(() => {
+          if (scenario === "success") {
+            transaction.status = "Success";
+            transaction.reason = "Authorised in simulation";
+
+            showResult("success", "Payment successful",
+              transaction.id + " reached a simulated successful outcome. No real funds moved.");
+
+            logEvent("Payment successful",
+              transaction.id + " was recorded as successful.");
+
+            updateLifecycle(4, "success");
+
+          } else if (scenario === "decline") {
+            transaction.status = "Failed";
+            transaction.reason = "Simulated bank / issuer decline";
+
+            showResult("failure", "Payment declined",
+              transaction.id + " was recorded as failed. A real system would follow the provider's response and payment-rail rules.");
+
+            logEvent("Payment failed",
+              transaction.id + " received a simulated decline.");
+
+            updateLifecycle(4, "failed");
+
+          } else if (scenario === "timeout") {
+            transaction.status = "Pending";
+            transaction.reason = "Timeout; final outcome unknown";
+
+            showResult("pending", "Outcome not confirmed",
+              transaction.id + " remains pending. Do not assume it failed; a real system should query the authoritative status before retrying.");
+
+            logEvent("Processing timeout",
+              transaction.id + " has an unknown outcome and remains pending.");
+
+            updateLifecycle(4, "unknown");
+
+          } else {
+            transaction.status = "Rejected";
+            transaction.reason = "Simulated risk-control rejection";
+
+            showResult("failure", "Payment rejected",
+              transaction.id + " was rejected by the simulated control before successful authorisation.");
+
+            logEvent("Risk control rejected payment",
+              transaction.id + " was recorded as rejected.");
+
+            updateLifecycle(4, "failed");
+          }
+
+          processing = false;
+          $("submit-button").disabled = false;
+          $("submit-button").textContent = "Process simulated payment";
+
+          render();
+        }, 400);
+      }, 350);
+    }, 300);
+  });
+
+  $("search").addEventListener("input", renderLedger);
+
+  $("export-button").addEventListener("click", function () {
+    if (!transactions.length) {
+      showResult("failure", "No records to export",
+        "Submit at least one transaction first.");
+      return;
+    }
+
+    const columns = [
+      "transaction_id", "created_at", "client_reference",
+      "merchant", "amount_inr", "payment_rail", "status", "reason"
+    ];
+
+    const quote = value =>
+      '"' + String(value).replace(/"/g, '""') + '"';
+
+    const rows = transactions.map(t => [
+      t.id, t.createdAt, t.reference, t.merchant,
+      t.amount.toFixed(2), t.rail, t.status, t.reason
+    ].map(quote).join(","));
+
+    const csv = [columns.join(","), ...rows].join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "fintech-systems-lab-transactions.csv";
+    document.body.append(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+
+    logEvent("Ledger exported",
+      transactions.length + " simulated transaction records exported.");
+  });
+
+  logEvent("Simulation initialised",
+    "Payment controls, ledger and reconciliation are ready.");
+
+  render();
+})();
+</script>
+
 </body>
 </html>
