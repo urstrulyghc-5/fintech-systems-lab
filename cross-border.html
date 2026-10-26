@@ -1,0 +1,236 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cross-Border Payments | FinTech Systems Lab</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#192b3a;background:#f5f7fa}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:#fff;border-bottom:1px solid #dfe5ec;padding:22px max(20px,calc((100% - 1080px)/2))}
+main{max-width:1080px;margin:28px auto;padding:0 18px 40px}
+h1{font-size:clamp(27px,4vw,38px);margin:12px 0}
+h2{font-size:19px;margin-top:0}
+p{line-height:1.65;color:#586878}
+small,.muted{color:#68798a}
+.tag{font-size:12px;color:#17664d;background:#e7f6ee;padding:6px 9px;border-radius:6px}
+.panel{background:#fff;border:1px solid #dfe5ec;border-radius:13px;padding:22px;margin:16px 0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+input,select{width:100%;padding:12px;border:1px solid #ccd5df;border-radius:8px;background:white;color:#192b3a;font-size:15px}
+button{border:0;background:#17664d;color:#fff;padding:13px 18px;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer}
+button.secondary{background:#edf1f5;color:#243648}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #8fc9b5;outline-offset:2px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.metric{background:#f5f8fa;padding:15px;border-radius:9px;min-width:0}
+.metric strong{display:block;font-size:clamp(18px,3vw,25px);margin-top:8px;overflow-wrap:anywhere}
+.steps{display:grid;gap:0}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:15px 0;border-bottom:1px solid #e7ebf0}
+.number{width:30px;height:30px;border-radius:50%;background:#edf1f5;display:grid;place-items:center;font-weight:700}
+.step.done .number{background:#dff4e8;color:#17664d}
+.step.current .number{background:#e1edff;color:#245ca6}
+.step h3{font-size:15px;margin:3px 0}
+.step p{margin:5px 0;font-size:14px}
+.notice{font-size:13px;background:#fff8e8;border:1px solid #f0dfad;padding:13px;border-radius:8px}
+#result{display:none}
+@media(max-width:620px){.grid{grid-template-columns:1fr}.summary{grid-template-columns:1fr}.panel{padding:16px}header{padding:18px}}
+</style>
+</head>
+<body>
+<header>
+  <strong>FinTech Systems Lab</strong>
+  <p style="margin:5px 0 0;font-size:13px">G Hari Charan · Design &amp; Curator</p>
+</header>
+
+<main>
+  <span class="tag">EDUCATIONAL SIMULATION</span>
+  <h1>How does money move across borders?</h1>
+  <p>Follow an international payment from a sender in India to a recipient in the United States. Explore the exchange rate, fees, participating institutions and possible outcomes.</p>
+
+  <div class="notice">
+    This is an illustrative simulation, not a live remittance service. The exchange rate, fees and processing outcomes are examples, not current market quotes or promises. Actual payment routes depend on the provider and corridor.
+  </div>
+
+  <section class="panel">
+    <h2>1. Set up the payment</h2>
+    <div class="grid">
+      <div>
+        <label for="sender">Sender</label>
+        <input id="sender" value="Customer in India">
+      </div>
+      <div>
+        <label for="recipient">Recipient</label>
+        <input id="recipient" value="Supplier in the United States">
+      </div>
+      <div>
+        <label for="amount">Amount to send (INR)</label>
+        <input id="amount" type="number" min="1" max="10000000" value="25000">
+      </div>
+      <div>
+        <label for="rate">Illustrative exchange rate (INR per USD)</label>
+        <input id="rate" type="number" min="1" max="1000" step="0.01" value="83.00">
+      </div>
+      <div>
+        <label for="fee">Sender fee (INR)</label>
+        <input id="fee" type="number" min="0" max="100000" step="1" value="150">
+      </div>
+      <div>
+        <label for="deduction">Example receiving-side deduction (USD)</label>
+        <input id="deduction" type="number" min="0" max="10000" step="0.01" value="5">
+      </div>
+      <div>
+        <label for="scenario">Payment scenario</label>
+        <select id="scenario">
+          <option value="success">Payment completes</option>
+          <option value="review">Additional compliance review</option>
+          <option value="delay">Confirmation is delayed</option>
+          <option value="reject">Payment is rejected before completion</option>
+        </select>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="run">Simulate payment</button>
+      <button id="reset" class="secondary">Reset example</button>
+    </div>
+    <p id="error" role="alert" style="color:#a52c2c"></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Understand the amount</h2>
+    <div class="summary">
+      <div class="metric">
+        <small>Sender amount</small>
+        <strong id="gross">₹25,000.00</strong>
+      </div>
+      <div class="metric">
+        <small>After sender fee</small>
+        <strong id="net">₹24,850.00</strong>
+      </div>
+      <div class="metric">
+        <small>Illustrative recipient amount</small>
+        <strong id="receive">$293.80</strong>
+      </div>
+    </div>
+    <p id="calculation">₹24,850 ÷ ₹83 per USD = $298.80 before the illustrative $5 receiving-side deduction.</p>
+    <p class="muted">This example assumes the sender fee is deducted from the amount entered. Providers may charge fees differently. Taxes, exchange-rate spreads and other charges are not included unless explicitly shown.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3. Follow the payment journey</h2>
+    <div class="steps" id="steps">
+      <div class="step"><div class="number">1</div><div><h3>Payment instruction</h3><p>The sender requests an international transfer.</p></div></div>
+      <div class="step"><div class="number">2</div><div><h3>Validation and compliance</h3><p>Relevant institutions may check payment details and applicable requirements.</p></div></div>
+      <div class="step"><div class="number">3</div><div><h3>Funding and currency conversion</h3><p>The provider applies the agreed exchange rate and applicable fees.</p></div></div>
+      <div class="step"><div class="number">4</div><div><h3>Payment routing and settlement</h3><p>The provider uses its relevant banking or payment arrangements. Intermediaries may be involved, depending on the route.</p></div></div>
+      <div class="step"><div class="number">5</div><div><h3>Recipient credit and confirmation</h3><p>The receiving institution processes the payment and confirms the outcome.</p></div></div>
+    </div>
+    <div id="result" class="notice" style="margin-top:18px" role="status" aria-live="polite"></div>
+  </section>
+
+  <section class="panel">
+    <h2>4. Why the outcome matters</h2>
+    <p><strong>Accepted is not always settled.</strong> An instruction can be accepted while checks or processing are still underway.</p>
+    <p><strong>A delay is not proof of failure.</strong> A timeout or missing confirmation can leave the outcome uncertain until the provider checks its records.</p>
+    <p><strong>Reconciliation matters.</strong> Institutions compare transaction records to identify missing, duplicated or mismatched entries and resolve exceptions.</p>
+    <p><strong>Real-world rules vary.</strong> The payment provider, countries, currencies, banking arrangements and compliance requirements affect the actual journey.</p>
+  </section>
+
+  <p class="muted" style="font-size:12px">Independent educational project by G Hari Charan. No real money is transferred, no bank is contacted and no live exchange rate is retrieved.</p>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const initial = {
+ sender:"Customer in India",
+ recipient:"Supplier in the United States",
+ amount:"25000", rate:"83.00", fee:"150",
+ deduction:"5", scenario:"success"
+};
+const money = (value, currency) => new Intl.NumberFormat(
+ "en-US",{style:"currency",currency,minimumFractionDigits:2,maximumFractionDigits:2}
+).format(value);
+let lastRun = null;
+
+function calculate(){
+ const amount = Number($("amount").value);
+ const rate = Number($("rate").value);
+ const fee = Number($("fee").value);
+ const deduction = Number($("deduction").value);
+ const error = $("error");
+ error.textContent = "";
+ if (![amount,rate,fee,deduction].every(Number.isFinite) ||
+     amount <= 0 || amount > 10000000 ||
+     rate <= 0 || rate > 1000 || fee < 0 ||
+     fee > amount || deduction < 0 || deduction > 10000){
+   error.textContent = "Check the amount, exchange rate and fees. The amount must exceed zero, and the sender fee cannot exceed the amount.";
+   return null;
+ }
+ const net = amount - fee;
+ const usdBeforeDeduction = net / rate;
+ if(deduction > usdBeforeDeduction){
+   error.textContent = "The example receiving-side deduction exceeds the converted amount. Please adjust it.";
+   return null;
+ }
+ return {amount,rate,fee,deduction,net,usdBeforeDeduction,
+         received:usdBeforeDeduction-deduction};
+}
+
+function showAmounts(){
+ const d = calculate();
+ if(!d) return null;
+ $("gross").textContent = money(d.amount,"INR");
+ $("net").textContent = money(d.net,"INR");
+ $("receive").textContent = money(d.received,"USD");
+ $("calculation").textContent =
+   `${money(d.net,"INR")} ÷ ₹${d.rate.toFixed(2)} per USD = ${money(d.usdBeforeDeduction,"USD")} before the illustrative ${money(d.deduction,"USD")} receiving-side deduction.`;
+ return d;
+}
+function paintSteps(active, completed=[]){
+ document.querySelectorAll(".step").forEach((el,i)=>{
+   el.classList.toggle("done",completed.includes(i));
+   el.classList.toggle("current",i===active);
+   el.querySelector(".number").textContent=completed.includes(i)?"✓":String(i+1);
+ });
+}
+function simulate(){
+ const d = showAmounts();
+ if(!d) return;
+ lastRun = d;
+ const scenario = $("scenario").value;
+ const result = $("result");
+ result.style.display="block";
+ const sender = $("sender").value.trim() || "Sender";
+ const recipient = $("recipient").value.trim() || "Recipient";
+ if(scenario==="success"){
+   paintSteps(-1,[0,1,2,3,4]);
+   result.textContent=`SIMULATED COMPLETION: The example payment from ${sender} to ${recipient} has reached the final stage in this scenario. Illustrative recipient amount: ${money(d.received,"USD")}. This is not a real transfer or confirmation from a financial institution.`;
+ }else if(scenario==="review"){
+   paintSteps(1,[0]);
+   result.textContent="ADDITIONAL REVIEW: The payment instruction has been received, but the scenario pauses at the review stage. Further checks may be required. Do not treat the transfer as settled.";
+ }else if(scenario==="delay"){
+   paintSteps(3,[0,1,2]);
+   result.textContent="CONFIRMATION DELAYED: The payment status is unresolved in this scenario. A real system would check authoritative provider records before retrying, to avoid creating a duplicate transfer.";
+ }else{
+   paintSteps(1,[0]);
+   result.textContent="REJECTED BEFORE COMPLETION: The scenario stops before settlement. A real provider would supply the applicable reason and explain whether funds were collected or need to be returned.";
+ }
+}
+$("run").addEventListener("click",simulate);
+$("reset").addEventListener("click",()=>{
+ Object.entries(initial).forEach(([key,value])=>$(key).value=value);
+ $("error").textContent="";
+ $("result").style.display="none";
+ $("result").textContent="";
+ paintSteps(-1,[]);
+ showAmounts();
+});
+["amount","rate","fee","deduction"].forEach(id=>{
+ $(id).addEventListener("input",showAmounts);
+});
+showAmounts();
+</script>
+</body>
+</html>
